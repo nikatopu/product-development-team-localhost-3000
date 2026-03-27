@@ -87,7 +87,7 @@ Behavioral change:
 
 ### 7. Where to Find Them
 
-- Your coworkers at Studio Glitch
+- Your coworkers
 - Developers in your freelance network
 - Classmates working on team projects at KIU
 - GitHub collaborators on shared repositories
