@@ -1,18 +1,19 @@
 # Interview Log — API Collaboration (Participant BC)
+
 ---
 
 ## Participant Profile
 
-| Field | Value |
-|-------|-------|
-| Pseudonym | BC |
-| Role | Backend / Data Engineer |
+| Field            | Value                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------- |
+| Pseudonym        | BC                                                                                    |
+| Role             | Backend / Data Engineer                                                               |
 | Relevant context | Works on data pipelines, large datasets, and system integrations in team environments |
-| How recruited | Personal network -- reached out via Messenger |
-| Interview date | April 6, 2026 |
-| Duration | ~15 minutes |
-| Format | Remote (Messenger)|
-| Interviewer(s) | Giorgi T. |
+| How recruited    | Personal network -- reached out via Messenger                                         |
+| Interview date   | April 6, 2026                                                                         |
+| Duration         | ~15 minutes                                                                           |
+| Format           | Remote (Messenger)                                                                    |
+| Interviewer(s)   | Giorgi T.                                                                             |
 
 ---
 
@@ -25,7 +26,7 @@ Not explicitly recorded. Participant responses were structured and thoughtful, s
 ## Verbatim Quotes
 
 **Quote 1**  
-Context: General workflow (Q1)
+Context: asked "Can you walk me through what a typical development workflow looks like for you when you’re working on a project?"
 
 > "I usually start by understanding the requirements and breaking the task into smaller, manageable pieces."
 
@@ -35,7 +36,7 @@ The participant follows a structured engineering workflow, meaning later problem
 ---
 
 **Quote 2**  
-Context: Team frustrations (Q3)
+Context: asked "What parts of working in a team on a project do you find most frustrating or time-consuming?"
 
 > "Miscommunication and unclear requirements are the most frustrating parts."
 
@@ -45,12 +46,13 @@ Core pain starts before implementation — misalignment at the requirement/API l
 ---
 
 **Quote 3**  
-Context: Real failure case (Q5)
+Context: asked "Can you tell me about a recent situation where something in your development process didn’t go as planned?"
 
 > "A pipeline worked locally but failed in production due to configuration differences... the issue was related to environment-specific settings that weren’t properly documented."
 
 **What this tells us:**  
 This highlights a documentation and environment gap problem:
+
 - Documentation is incomplete
 - Critical system knowledge is not shared properly
 - Bugs appear late (in production)
@@ -58,7 +60,7 @@ This highlights a documentation and environment gap problem:
 ---
 
 **Quote 4**  
-Context: API integration process (Q6)
+Context: asked "Can you walk me through the last time you had to work with an API created by someone else (or that someone else had to use)? What happened step by step?"
 
 > "I had to adjust a few request parameters because the actual behavior differed slightly from the documentation."
 
@@ -78,7 +80,7 @@ Developers do not fully trust documentation and rely on manual validation (e.g.,
 ---
 
 **Quote 6**  
-Context: Cost of failure (Q8)
+Context: asked "When that process doesn’t go smoothly, what usually happens? What does it cost you in terms of time or effort?"
 
 > "It can take hours or even days to trace whether the problem is in the API, the documentation, the authentication setup, or the integration code itself."
 
@@ -88,7 +90,7 @@ The main cost is time, driven by uncertainty in identifying the source of the is
 ---
 
 **Quote 7**  
-Context: Current tools (Q10)
+Context: asked "How well does that work for you? What parts of it are frustrating or missing?"
 
 > "Documentation can get outdated... there’s often a gap between documented behavior and actual implementation."
 
@@ -98,7 +100,7 @@ Even with tools like Swagger/OpenAPI, synchronization between documentation and 
 ---
 
 **Quote 8**  
-Context: Additional insight (Q11)
+Context: asked "Is there anything about working with APIs or collaborating with other developers that I haven’t asked about but that you think is important?"
 
 > "Consistency—having standardized API design, naming conventions, and error handling across services makes a big difference."
 
@@ -109,27 +111,27 @@ The problem extends beyond tools into system-level consistency and standardizati
 
 ## Key Observations
 
-- Participant follows a structured workflow → issues are systemic, not skill-related  
+- Participant follows a structured workflow → issues are systemic, not skill-related
 - Friction appears across multiple stages:
   - Requirements
   - API integration
-  - Environment configuration  
-- Strong reliance on manual verification (e.g., Postman)  
-- Uses multiple tools (Swagger, Postman, internal docs) → fragmented information sources  
-- Pain is primarily expressed as time loss rather than emotional frustration  
+  - Environment configuration
+- Strong reliance on manual verification (e.g., Postman)
+- Uses multiple tools (Swagger, Postman, internal docs) → fragmented information sources
+- Pain is primarily expressed as time loss rather than emotional frustration
 
 ---
 
 ## Preliminary Insights
 
-- The core problem is lack of a reliable, up-to-date source of truth  
-- Documentation exists but is not fully trusted  
+- The core problem is lack of a reliable, up-to-date source of truth
+- Documentation exists but is not fully trusted
 - Developers compensate by:
-  - Testing APIs manually  
-  - Writing their own notes  
-- Debugging is expensive due to unclear ownership (API vs frontend vs config)  
-- Similar issues appear in APIs and environment configurations  
-- This suggests a broader issue: system communication breakdown  
+  - Testing APIs manually
+  - Writing their own notes
+- Debugging is expensive due to unclear ownership (API vs frontend vs config)
+- Similar issues appear in APIs and environment configurations
+- This suggests a broader issue: system communication breakdown
 
 ---
 
@@ -141,20 +143,20 @@ The problem extends beyond tools into system-level consistency and standardizati
 
 ## Open Questions
 
-- How frequently does documentation mismatch occur?  
-- Who is responsible for maintaining API documentation?  
-- Are there automated ways to sync documentation with implementation?  
-- How are API changes communicated across teams?  
-- Would real-time validation tools reduce this friction?  
+- How frequently does documentation mismatch occur?
+- Who is responsible for maintaining API documentation?
+- Are there automated ways to sync documentation with implementation?
+- How are API changes communicated across teams?
+- Would real-time validation tools reduce this friction?
 
 ---
 
 ## ICP Fit Assessment
 
 - [x] Strong fit — matches all ICP criteria:
-  - Works with APIs  
-  - Collaborates with other developers  
-  - Experiences real friction in integration and communication  
+  - Works with APIs
+  - Collaborates with other developers
+  - Experiences real friction in integration and communication
 
 ---
 
@@ -163,11 +165,12 @@ The problem extends beyond tools into system-level consistency and standardizati
 **Most important learning:**  
 The key issue is not just communication difficulty, but lack of trust in shared system knowledge (documentation, configs, APIs).
 
-**What to do differently next time:**  
-- Ask for more specific failure stories  
-- Quantify time lost (hours/days per incident)  
-- Probe frequency of the problem  
-- Try to capture stronger emotional reactions  
+**What to do differently next time:**
+
+- Ask for more specific failure stories
+- Quantify time lost (hours/days per incident)
+- Probe frequency of the problem
+- Try to capture stronger emotional reactions
 
 ---
 
