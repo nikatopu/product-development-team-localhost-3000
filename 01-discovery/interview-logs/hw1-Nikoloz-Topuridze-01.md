@@ -4,16 +4,16 @@
 
 ## Participant Profile
 
-| Field | Value |
-|-------|-------|
-| Pseudonym | GG |
-| Role | Full-stack web developer (backend-oriented) |
+| Field            | Value                                                                                      |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Pseudonym        | GG                                                                                         |
+| Role             | Full-stack web developer (backend-oriented)                                                |
 | Relevant context | Works in a professional team building and consuming APIs daily in a structured environment |
-| How recruited | Personal network -- coworker (Slack message) |
-| Interview date | April 7, 2026 |
-| Duration | 15 minutes |
-| Format | Call (Slack) |
-| Interviewer(s) | Nikoloz Topuridze |
+| How recruited    | Personal network -- coworker (Slack message)                                               |
+| Interview date   | April 7, 2026                                                                              |
+| Duration         | 15 minutes                                                                                 |
+| Format           | Call (Slack)                                                                               |
+| Interviewer(s)   | Nikoloz Topuridze                                                                          |
 
 ---
 
@@ -100,7 +100,7 @@ The current "solution" is informal and human-dependent. There is no mention of s
 
 - [ ] Strong fit -- this is exactly the person we defined
 - [x] Partial fit -- matches on some dimensions but not all (explain):  
-Matches the technical segment (developer working with APIs), but does not experience strong pain due to working in a highly structured, senior-led environment.
+      Matches the technical segment (developer working with APIs), but does not experience strong pain due to working in a highly structured, senior-led environment.
 
 ---
 
