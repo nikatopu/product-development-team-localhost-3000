@@ -1,7 +1,8 @@
 # localhost:3000 — API Communication Tool
 
 **Course:** CS-PD-2026  
-**Team:** localhost:3000  
+**Team:** localhost:3000
+
 **Members:**
 
 - Nikoloz Topuridze (Tech Lead)
@@ -12,21 +13,51 @@
 
 ## Problem
 
-Backend and frontend developers have trouble communicating API details during software development, especially when new endpoints are added, and it matters because miscommunication increases development time and slows down the whole project.
+Frontend, backend, and mobile developers working in small to mid-sized teams lose approximately **4 to 16 hours per week per developer** due to unreliable, delayed, or inconsistent API documentation and lack of a single source of truth for API behavior.
 
-Developers currently rely on:
+Because API specifications are not synchronized with implementation, developers are forced into:
 
-- Manual documentation (Swagger, notes)
-- Messaging (Messenger, Slack)
-- Repeated clarification
+- Repeated debugging loops
+- Manual validation using tools like Postman
+- Constant back-and-forth communication
 
-This creates friction, delays, and inconsistencies in development workflows.
+This results in:
+
+- Slower feature delivery
+- Increased development costs
+- Frustration and workflow inefficiency
+
+**Key insight:**  
+The problem is not lack of documentation, but lack of **trust in API understanding**.
+
+---
+
+## Evidence (From Interviews)
+
+Based on 6 interviews with developers:
+
+- "It can cost several hours or even days."
+- "Actual API behavior doesn’t match documentation."
+- "I don’t know request/response types until documentation is written."
+- "It feels repetitive and time wasting."
+
+**Observed patterns:**
+
+- Documentation mismatch
+- Missing API contracts
+- Rework loops
+- Manual validation as workaround
+- Dependency on human communication
 
 ---
 
 ## Objective
 
-Build a software solution that simplifies and standardizes API communication between backend and frontend developers by reducing manual effort and improving clarity in real-time workflows.
+Build a software solution that creates a **trusted, real-time, and authoritative source of API truth**, reducing:
+
+- Manual documentation effort
+- Integration errors
+- Communication overhead
 
 ---
 
@@ -34,54 +65,90 @@ Build a software solution that simplifies and standardizes API communication bet
 
 A lightweight developer tool that:
 
-- Automatically captures API endpoint definitions
-- Generates structured API contracts
-- Shares updates with frontend developers instantly
-- Reduces the need for manual documentation and repeated messaging
+- Automatically captures API definitions from code
+- Generates **synchronized API contracts**
+- Keeps documentation aligned with implementation in real time
+- Allows frontend developers to consume APIs without clarification loops
 
-This may take the form of:
+Possible formats:
 
-- A web dashboard
-- A CLI tool
-- A development plugin (e.g., for Node.js or Express)
+- Web dashboard
+- CLI tool
+- Development plugin (Node.js / Express)
 
 ---
 
 ## Target Users
 
-- Backend developers working in small to mid-size teams
+- Backend developers building APIs
 - Frontend developers integrating APIs
-- Student developers working on team projects
-- Freelance developers collaborating remotely
+- Full-stack developers working across both layers
+- Small to mid-sized teams without strict API governance
+- Student teams and freelance developers
 
 ---
 
 ## Scope (MVP)
 
-The initial version of the product will focus on:
+### In Scope
 
 - Detecting or defining API endpoints
-- Generating readable API specifications
+- Generating accurate API specifications
+- Keeping documentation synchronized with code
 - Sharing updates between backend and frontend
-- Providing a simple interface for viewing endpoints
+- Simple interface for exploring API structure
 
-Out of scope (for now):
+### Out of Scope (Initial)
 
-- Full API testing platforms
-- Complex enterprise integrations
-- Authentication systems beyond basic usage
+- Full API testing platforms (Postman alternatives)
+- Enterprise-level integrations
+- Complex authentication/authorization systems
+- Large-scale API gateways
+
+---
+
+## Key Differentiation
+
+Unlike existing tools (Swagger, Postman):
+
+- Focus on **accuracy and synchronization**, not just documentation
+- Reduce **trust gap** between implementation and docs
+- Minimize **manual effort and communication loops**
 
 ---
 
 ## Tech Direction
 
-Planned technologies (subject to iteration):
+Planned stack (subject to iteration):
 
 - Frontend: React / Next.js
 - Backend: Node.js
-- API parsing / generation: Custom or OpenAPI-based
-- Version control integration: GitHub (optional later stage)
+- API schema generation: OpenAPI or custom parser
+- Optional integration: GitHub / CI pipelines
 
 ---
 
-## Repository Structure (Planned)
+## Status
+
+- [x] Interviews completed
+- [x] Affinity mapping completed
+- [x] Pattern analysis completed
+- [x] Problem statement finalized
+- [ ] Solution validation
+- [ ] MVP development
+
+---
+
+## Summary
+
+The core problem is not communication itself, but the absence of a **reliable system that guarantees correct API understanding**.
+
+Developers are currently forced to rely on:
+
+- manual testing
+- human clarification
+- fragmented tools
+
+This creates a consistent and measurable productivity loss.
+
+The goal of this project is to replace that with a \*\*system-level solution t
