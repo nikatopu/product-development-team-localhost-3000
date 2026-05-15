@@ -1,6 +1,7 @@
 using ApiDocGen.Models.Responses;
 using ApiDocGen.Services;
 using Microsoft.AspNetCore.Mvc;
+using ApiDocGen.Models.Requests;
 
 namespace ApiDocGen.Controllers;
 
@@ -59,6 +60,26 @@ public class DocumentationController : ControllerBase
             var analysis = await _analysisService.AnalyzeRepositoryAsync(localPath, repoUrl);
             var doc = _documentationService.GenerateOpenApi(analysis);
             return Ok(doc);
+        }
+        finally
+        {
+            if (localPath != null) _gitService.Cleanup(localPath);
+        }
+    }
+    [HttpPost("typescript")]
+    [ProducesResponseType(typeof(DocumentationResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<DocumentationResult>> GetTypeScript([FromBody] AnalyzeRepoRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.RepoUrl))
+            return BadRequest("RepoUrl is required.");
+
+        string? localPath = null;
+        try
+        {
+            localPath = await _gitService.CloneRepositoryAsync(request.RepoUrl, request.Branch);
+            var analysis = await _analysisService.AnalyzeRepositoryAsync(localPath, request.RepoUrl);
+            return Ok(_documentationService.GenerateTypeScript(analysis));
         }
         finally
         {

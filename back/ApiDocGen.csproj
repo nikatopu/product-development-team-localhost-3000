@@ -17,6 +17,9 @@
 		<PackageReference Include="Microsoft.Build.Locator" Version="1.*"
 		  ExcludeAssets="runtime"
 		  PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.11.4"
+          ExcludeAssets="runtime"
+          PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.*"
 		  ExcludeAssets="runtime"
 		  PrivateAssets="all" />
