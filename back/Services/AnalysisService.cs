@@ -13,6 +13,8 @@ public class AnalysisService : IAnalysisService
     private static readonly string[] HttpMethodAttributes =
         ["HttpGet", "HttpPost", "HttpPut", "HttpDelete", "HttpPatch", "HttpHead", "HttpOptions"];
 
+    private Dictionary<string, ClassDeclarationSyntax> _typeRegistry = new();
+
     public AnalysisService(ILogger<AnalysisService> logger) => _logger = logger;
 
     public async Task<AnalysisResult> AnalyzeRepositoryAsync(string localPath, string repoUrl)
@@ -22,6 +24,9 @@ public class AnalysisService : IAnalysisService
             .ToList();
 
         _logger.LogInformation("Analyzing {Count} .cs files", csFiles.Count);
+
+        _typeRegistry = await BuildTypeRegistryAsync(csFiles);
+        _logger.LogInformation("Type registry built with {Count} types", _typeRegistry.Count);
 
         var routes = new List<RouteInfo>();
         var controllerNames = new HashSet<string>();
@@ -45,7 +50,6 @@ public class AnalysisService : IAnalysisService
             }
         }
 
-        // Detect minimal APIs
         var minimalApiRoutes = await ExtractMinimalApiRoutesAsync(csFiles);
         routes.AddRange(minimalApiRoutes);
 
@@ -69,6 +73,123 @@ public class AnalysisService : IAnalysisService
         };
     }
 
+    private async Task<Dictionary<string, ClassDeclarationSyntax>> BuildTypeRegistryAsync(
+        List<string> csFiles)
+    {
+        var registry = new Dictionary<string, ClassDeclarationSyntax>();
+
+        foreach (var file in csFiles)
+        {
+            var code = await File.ReadAllTextAsync(file);
+            var tree = CSharpSyntaxTree.ParseText(code);
+            var root = await tree.GetRootAsync();
+
+            var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
+            foreach (var cls in classes)
+            {
+                var name = cls.Identifier.Text;
+                if (!registry.ContainsKey(name))
+                    registry[name] = cls;
+            }
+
+            var records = root.DescendantNodes().OfType<RecordDeclarationSyntax>();
+            foreach (var record in records)
+            {
+                var name = record.Identifier.Text;
+                if (!registry.ContainsKey(name))
+                {
+                   
+                    registry[$"record:{name}"] = null!;
+                }
+            }
+        }
+
+        return registry;
+    }
+
+    private List<Models.Responses.PropertyInfo> ResolveTypeProperties(
+        string typeName, int depth = 0)
+    {
+        if (depth > 3) return [];
+
+        var inner = UnwrapGenericType(typeName);
+        if (inner != typeName)
+            return ResolveTypeProperties(inner, depth);
+
+        if (IsPrimitiveType(typeName)) return [];
+
+        if (!_typeRegistry.TryGetValue(typeName, out var classDef) || classDef == null)
+            return [];
+
+        var properties = new List<Models.Responses.PropertyInfo>();
+
+        var propDeclarations = classDef.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Where(p => p.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)));
+
+        foreach (var prop in propDeclarations)
+        {
+            var propTypeName = prop.Type.ToString();
+            var isRequired = !propTypeName.EndsWith("?")
+                && prop.Modifiers.Any(m => m.ToString() == "required");
+            var summary = ExtractXmlSummaryFromNode(prop);
+
+            var nestedProperties = IsPrimitiveType(UnwrapGenericType(propTypeName))
+                ? []
+                : ResolveTypeProperties(UnwrapGenericType(propTypeName), depth + 1);
+
+            properties.Add(new Models.Responses.PropertyInfo
+            {
+                Name = prop.Identifier.Text,
+                Type = propTypeName,
+                IsRequired = isRequired,
+                Summary = summary,
+                NestedProperties = nestedProperties
+            });
+        }
+
+        var fieldDeclarations = classDef.Members
+            .OfType<FieldDeclarationSyntax>()
+            .Where(f => f.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)));
+
+        foreach (var field in fieldDeclarations)
+        {
+            var fieldTypeName = field.Declaration.Type.ToString();
+            foreach (var variable in field.Declaration.Variables)
+            {
+                properties.Add(new Models.Responses.PropertyInfo
+                {
+                    Name = variable.Identifier.Text,
+                    Type = fieldTypeName,
+                    IsRequired = false,
+                    NestedProperties = []
+                });
+            }
+        }
+
+        return properties;
+    }
+
+    private static string UnwrapGenericType(string typeName)
+    {
+        
+        var match = Regex.Match(typeName,
+            @"^(?:List|IList|IEnumerable|ICollection|Task|ActionResult|IActionResult)<(.+)>$");
+        return match.Success ? match.Groups[1].Value.Trim() : typeName;
+    }
+
+    private static bool IsPrimitiveType(string typeName)
+    {
+        var primitives = new HashSet<string>
+        {
+            "int", "long", "short", "byte", "float", "double", "decimal", "bool",
+            "string", "char", "Guid", "DateTime", "DateTimeOffset", "TimeSpan",
+            "int?", "long?", "bool?", "double?", "decimal?", "Guid?", "DateTime?",
+            "object", "dynamic", "void", "IActionResult", "ActionResult"
+        };
+        return primitives.Contains(typeName);
+    }
+
     private static bool IsController(ClassDeclarationSyntax cls)
     {
         var name = cls.Identifier.Text;
@@ -88,7 +209,6 @@ public class AnalysisService : IAnalysisService
             is LiteralExpressionSyntax lit)
         {
             var route = lit.Token.ValueText;
-            // Replace [controller] token
             var controllerName = controller.Identifier.Text.Replace("Controller", "");
             return route.Replace("[controller]", controllerName.ToLower());
         }
@@ -97,12 +217,11 @@ public class AnalysisService : IAnalysisService
         return $"api/{name}";
     }
 
-    private static List<RouteInfo> ExtractRoutes(
+    private List<RouteInfo> ExtractRoutes(
         ClassDeclarationSyntax controller, string controllerRoute)
     {
         var routes = new List<RouteInfo>();
         var controllerName = controller.Identifier.Text;
-
         var methods = controller.Members.OfType<MethodDeclarationSyntax>();
 
         foreach (var method in methods)
@@ -129,8 +248,9 @@ public class AnalysisService : IAnalysisService
 
             var summary = ExtractXmlSummary(method);
             var parameters = ExtractParameters(method);
-            var requestBody = ExtractRequestBody(method);
-            var responses = ExtractResponses(method);
+            var requestBody = ExtractRequestBody(method);  
+            var responses = ExtractResponses(method);       
+
             var attributes = method.AttributeLists
                 .SelectMany(al => al.Attributes)
                 .Select(a => a.Name.ToString())
@@ -158,9 +278,21 @@ public class AnalysisService : IAnalysisService
     {
         var trivia = method.GetLeadingTrivia()
             .FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
-
         if (trivia == default) return null;
+        var xml = trivia.ToString();
+        var match = Regex.Match(xml, @"<summary>(.*?)</summary>",
+            RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        return match.Success
+            ? Regex.Replace(match.Groups[1].Value.Trim(), @"^\s*///\s*", "",
+                RegexOptions.Multiline).Trim()
+            : null;
+    }
 
+    private static string? ExtractXmlSummaryFromNode(SyntaxNode node)
+    {
+        var trivia = node.GetLeadingTrivia()
+            .FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia));
+        if (trivia == default) return null;
         var xml = trivia.ToString();
         var match = Regex.Match(xml, @"<summary>(.*?)</summary>",
             RegexOptions.Singleline | RegexOptions.IgnoreCase);
@@ -178,46 +310,71 @@ public class AnalysisService : IAnalysisService
         foreach (var param in method.ParameterList.Parameters)
         {
             var attrs = param.AttributeLists.SelectMany(al => al.Attributes).ToList();
-            var source = attrs.FirstOrDefault()?.Name.ToString() switch
+            var attrName = attrs.FirstOrDefault()?.Name.ToString();
+
+            if (attrName == "FromBody") continue;
+
+            var typeName = param.Type?.ToString() ?? "object";
+            if (attrName == null && !IsPrimitiveTypeStatic(typeName)) continue;
+
+            var source = attrName switch
             {
                 "FromRoute" => "Route",
                 "FromQuery" => "Query",
                 "FromHeader" => "Header",
-                "FromBody" => null, // handled separately
-                _ => "Route" // default assumption for simple types
+                _ => "Route"
             };
-
-            if (source == null) continue; // skip body params here
 
             result.Add(new Models.Responses.ParameterInfo
             {
                 Name = param.Identifier.Text,
-                Type = param.Type?.ToString() ?? "object",
+                Type = typeName,
                 Source = source,
-                IsRequired = !param.Type?.ToString().EndsWith("?") ?? true
+                IsRequired = !typeName.EndsWith("?")
             });
         }
 
         return result;
     }
 
-    private static RequestBodyInfo? ExtractRequestBody(MethodDeclarationSyntax method)
+    private RequestBodyInfo? ExtractRequestBody(MethodDeclarationSyntax method)
     {
         var bodyParam = method.ParameterList.Parameters
             .FirstOrDefault(p => p.AttributeLists
                 .SelectMany(al => al.Attributes)
                 .Any(a => a.Name.ToString() == "FromBody"));
 
+        if (bodyParam == null)
+        {
+            var httpAttr = method.AttributeLists
+                .SelectMany(al => al.Attributes)
+                .FirstOrDefault(a => a.Name.ToString() is "HttpPost" or "HttpPut" or "HttpPatch");
+
+            if (httpAttr != null)
+            {
+                bodyParam = method.ParameterList.Parameters
+                    .FirstOrDefault(p =>
+                    {
+                        var t = p.Type?.ToString() ?? "";
+                        return !IsPrimitiveTypeStatic(t)
+                            && !p.AttributeLists.SelectMany(al => al.Attributes)
+                                .Any(a => a.Name.ToString() is "FromRoute" or "FromQuery" or "FromHeader");
+                    });
+            }
+        }
+
         if (bodyParam == null) return null;
+
+        var typeName = bodyParam.Type?.ToString() ?? "object";
 
         return new RequestBodyInfo
         {
-            TypeName = bodyParam.Type?.ToString() ?? "object",
-            Properties = [] // deep type resolution needs semantic model
+            TypeName = typeName,
+            Properties = ResolveTypeProperties(typeName)
         };
     }
 
-    private static List<ResponseInfo> ExtractResponses(MethodDeclarationSyntax method)
+    private List<ResponseInfo> ExtractResponses(MethodDeclarationSyntax method)
     {
         var responses = new List<ResponseInfo>();
 
@@ -230,15 +387,13 @@ public class AnalysisService : IAnalysisService
             var args = attr.ArgumentList?.Arguments.ToList() ?? [];
             if (args.Count == 0) continue;
 
-            // Try to parse status code
             var statusCode = 200;
             string typeName = "void";
 
             foreach (var arg in args)
             {
                 var text = arg.ToString();
-                if (int.TryParse(text, out var code))
-                    statusCode = code;
+                if (int.TryParse(text, out var code)) statusCode = code;
                 else if (text.StartsWith("typeof("))
                     typeName = text.Replace("typeof(", "").TrimEnd(')');
                 else if (text.StartsWith("StatusCodes."))
@@ -249,11 +404,11 @@ public class AnalysisService : IAnalysisService
             {
                 StatusCode = statusCode,
                 TypeName = typeName,
-                Description = GetStatusDescription(statusCode)
+                Description = GetStatusDescription(statusCode),
+                Properties = ResolveTypeProperties(typeName) 
             });
         }
 
-        // Fallback — infer from return type
         if (responses.Count == 0)
         {
             var returnType = method.ReturnType.ToString();
@@ -266,7 +421,8 @@ public class AnalysisService : IAnalysisService
             {
                 StatusCode = 200,
                 TypeName = typeName,
-                Description = "OK"
+                Description = "OK",
+                Properties = ResolveTypeProperties(typeName) // ← expand
             });
         }
 
@@ -276,14 +432,14 @@ public class AnalysisService : IAnalysisService
     private async Task<List<RouteInfo>> ExtractMinimalApiRoutesAsync(List<string> csFiles)
     {
         var routes = new List<RouteInfo>();
-        var minimalApiPattern = new Regex(
+        var pattern = new Regex(
             @"app\.(MapGet|MapPost|MapPut|MapDelete|MapPatch)\s*\(\s*""([^""]+)""",
             RegexOptions.Compiled);
 
         foreach (var file in csFiles)
         {
             var code = await File.ReadAllTextAsync(file);
-            foreach (Match match in minimalApiPattern.Matches(code))
+            foreach (Match match in pattern.Matches(code))
             {
                 routes.Add(new RouteInfo
                 {
@@ -302,7 +458,6 @@ public class AnalysisService : IAnalysisService
     {
         var frameworks = new List<string>();
         var csprojFiles = Directory.GetFiles(localPath, "*.csproj", SearchOption.AllDirectories);
-
         foreach (var file in csprojFiles)
         {
             var content = File.ReadAllText(file);
@@ -312,8 +467,19 @@ public class AnalysisService : IAnalysisService
             if (content.Contains("MediatR")) frameworks.Add("MediatR");
             if (content.Contains("FluentValidation")) frameworks.Add("FluentValidation");
         }
-
         return frameworks.Distinct().ToList();
+    }
+
+    private static bool IsPrimitiveTypeStatic(string typeName)
+    {
+        var primitives = new HashSet<string>
+        {
+            "int", "long", "short", "byte", "float", "double", "decimal", "bool",
+            "string", "char", "Guid", "DateTime", "DateTimeOffset", "TimeSpan",
+            "int?", "long?", "bool?", "double?", "decimal?", "Guid?", "DateTime?",
+            "object", "dynamic", "void", "IActionResult", "ActionResult"
+        };
+        return primitives.Contains(typeName);
     }
 
     private static int MapStatusCodeConstant(string constant) => constant switch

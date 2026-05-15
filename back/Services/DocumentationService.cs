@@ -43,16 +43,33 @@ public class DocumentationService : IDocumentationService
                 if (route.RequestBody != null)
                 {
                     sb.AppendLine($"**Request Body:** `{route.RequestBody.TypeName}`");
+                    if (route.RequestBody.Properties.Count > 0)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine("| Property | Type | Required | Description |");
+                        sb.AppendLine("|----------|------|----------|-------------|");
+                        foreach (var p in route.RequestBody.Properties)
+                            sb.AppendLine($"| {p.Name} | `{p.Type}` | {(p.IsRequired ? "✅" : "❌")} | {p.Summary ?? "-"} |");
+                    }
                     sb.AppendLine();
                 }
 
                 if (route.Responses.Count > 0)
                 {
                     sb.AppendLine("**Responses**");
-                    sb.AppendLine("| Status | Type | Description |");
-                    sb.AppendLine("|--------|------|-------------|");
                     foreach (var r in route.Responses)
+                    {
                         sb.AppendLine($"| {r.StatusCode} | `{r.TypeName}` | {r.Description} |");
+                        if (r.Properties.Count > 0)
+                        {
+                            sb.AppendLine();
+                            sb.AppendLine($"  *`{r.TypeName}` shape:*");
+                            sb.AppendLine("  | Property | Type | Required |");
+                            sb.AppendLine("  |----------|------|----------|");
+                            foreach (var p in r.Properties)
+                                sb.AppendLine($"  | {p.Name} | `{p.Type}` | {(p.IsRequired ? "✅" : "❌")} |");
+                        }
+                    }
                     sb.AppendLine();
                 }
 

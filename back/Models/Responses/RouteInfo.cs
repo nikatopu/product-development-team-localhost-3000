@@ -21,6 +21,14 @@ public class ParameterInfo
     public bool IsRequired { get; set; }
 }
 
+public class ResponseInfo
+{
+    public int StatusCode { get; set; }
+    public string TypeName { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public List<PropertyInfo> Properties { get; set; } = new(); 
+}
+
 public class RequestBodyInfo
 {
     public string TypeName { get; set; } = string.Empty;
@@ -33,11 +41,5 @@ public class PropertyInfo
     public string Type { get; set; } = string.Empty;
     public bool IsRequired { get; set; }
     public string? Summary { get; set; }
-}
-
-public class ResponseInfo
-{
-    public int StatusCode { get; set; }
-    public string TypeName { get; set; } = string.Empty;
-    public string? Description { get; set; }
+    public List<PropertyInfo> NestedProperties { get; set; } = new(); 
 }
