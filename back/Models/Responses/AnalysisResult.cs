@@ -14,5 +14,5 @@ public class AnalysisMetadata
     public int TotalRoutes { get; set; }
     public int TotalControllers { get; set; }
     public List<string> DetectedFrameworks { get; set; } = new();
-    public string ApiType { get; set; } = string.Empty; // "Controller-based" | "Minimal API" | "Mixed"
+    public string ApiType { get; set; } = string.Empty; 
 }

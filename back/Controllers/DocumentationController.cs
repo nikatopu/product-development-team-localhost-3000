@@ -86,4 +86,43 @@ public class DocumentationController : ControllerBase
             if (localPath != null) _gitService.Cleanup(localPath);
         }
     }
+    [HttpPost("json/routes")]
+    [ProducesResponseType(typeof(DocumentationResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult<DocumentationResult>> GetRoutesJson([FromBody] AnalyzeRepoRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.RepoUrl))
+            return BadRequest("RepoUrl is required.");
+
+        string? localPath = null;
+        try
+        {
+            localPath = await _gitService.CloneRepositoryAsync(request.RepoUrl, request.Branch);
+            var analysis = await _analysisService.AnalyzeRepositoryAsync(localPath, request.RepoUrl);
+            return Ok(_documentationService.GenerateRoutesJson(analysis));
+        }
+        finally
+        {
+            if (localPath != null) _gitService.Cleanup(localPath);
+        }
+    }
+
+    [HttpPost("json/typescript")]
+    [ProducesResponseType(typeof(DocumentationResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult<DocumentationResult>> GetTypeScriptJson([FromBody] AnalyzeRepoRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.RepoUrl))
+            return BadRequest("RepoUrl is required.");
+
+        string? localPath = null;
+        try
+        {
+            localPath = await _gitService.CloneRepositoryAsync(request.RepoUrl, request.Branch);
+            var analysis = await _analysisService.AnalyzeRepositoryAsync(localPath, request.RepoUrl);
+            return Ok(_documentationService.GenerateTypeScriptJson(analysis));
+        }
+        finally
+        {
+            if (localPath != null) _gitService.Cleanup(localPath);
+        }
+    }
 }

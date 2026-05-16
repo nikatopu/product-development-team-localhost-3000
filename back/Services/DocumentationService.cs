@@ -380,4 +380,181 @@ public class DocumentationService : IDocumentationService
 
     private static string ToCamelCase(string name) =>
         string.IsNullOrEmpty(name) ? name : char.ToLower(name[0]) + name[1..];
+    public DocumentationResult GenerateRoutesJson(AnalysisResult analysis)
+    {
+        var routes = analysis.Routes.Select(route => new
+        {
+            method = route.HttpMethod,
+            path = route.Path,
+            controller = route.ControllerName,
+            action = route.ActionName,
+            summary = route.Summary,
+            attributes = route.Attributes,
+            parameters = route.Parameters.Select(p => new
+            {
+                name = p.Name,
+                type = p.Type,
+                source = p.Source,
+                isRequired = p.IsRequired
+            }),
+            requestBody = route.RequestBody == null ? null : new
+            {
+                typeName = route.RequestBody.TypeName,
+                properties = MapProperties(route.RequestBody.Properties)
+            },
+            responses = route.Responses.Select(r => new
+            {
+                statusCode = r.StatusCode,
+                description = r.Description,
+                typeName = r.TypeName,
+                properties = MapProperties(r.Properties)
+            })
+        });
+
+        return new DocumentationResult
+        {
+            Format = "json-routes",
+            Content = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                projectName = analysis.ProjectName,
+                analyzedAt = analysis.AnalyzedAt,
+                metadata = new
+                {
+                    totalRoutes = analysis.Metadata.TotalRoutes,
+                    totalControllers = analysis.Metadata.TotalControllers,
+                    apiType = analysis.Metadata.ApiType,
+                    detectedFrameworks = analysis.Metadata.DetectedFrameworks
+                },
+                routes
+            }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }),
+            GeneratedAt = DateTime.UtcNow
+        };
+    }
+
+    public DocumentationResult GenerateTypeScriptJson(AnalysisResult analysis)
+    {
+        var interfaces = new Dictionary<string, object>();
+
+        foreach (var route in analysis.Routes)
+        {
+            if (route.RequestBody?.Properties.Count > 0)
+            {
+                var name = UnwrapGenericTypeName(route.RequestBody.TypeName);
+                interfaces.TryAdd(name, MapPropertiesAsTs(route.RequestBody.Properties));
+            }
+
+            foreach (var response in route.Responses)
+            {
+                if (response.Properties.Count > 0)
+                {
+                    var name = UnwrapGenericTypeName(response.TypeName);
+                    interfaces.TryAdd(name, MapPropertiesAsTs(response.Properties));
+                }
+            }
+        }
+
+        var routeTypes = analysis.Routes.Select(route =>
+        {
+            var fnName = ToFunctionName(route.HttpMethod, route.Path);
+            var successResponse = route.Responses.FirstOrDefault(r => r.StatusCode is >= 200 and < 300);
+
+            string? responseType = null;
+            if (successResponse != null)
+            {
+                var baseType = UnwrapGenericTypeName(successResponse.TypeName);
+                var isList = IsListType(successResponse.TypeName);
+                responseType = isList ? $"{baseType}[]" : MapToTypeScriptType(successResponse.TypeName);
+            }
+
+            string? requestType = null;
+            if (route.RequestBody != null)
+                requestType = UnwrapGenericTypeName(route.RequestBody.TypeName);
+
+            var queryParams = route.Parameters
+                .Where(p => p.Source == "Query")
+                .Select(p => new
+                {
+                    name = ToCamelCase(p.Name),
+                    type = MapToTypeScriptType(p.Type),
+                    isRequired = p.IsRequired
+                }).ToList();
+
+            var routeParams = route.Parameters
+                .Where(p => p.Source == "Route")
+                .Select(p => new
+                {
+                    name = ToCamelCase(p.Name),
+                    type = MapToTypeScriptType(p.Type),
+                    isRequired = p.IsRequired
+                }).ToList();
+
+            var fetchParams = new List<object>();
+            foreach (var p in routeParams)
+                fetchParams.Add(new { name = p.name, type = p.type, source = "route" });
+            if (route.RequestBody != null)
+                fetchParams.Add(new { name = "body", type = requestType ?? "unknown", source = "body" });
+            if (queryParams.Count > 0)
+                fetchParams.Add(new { name = "params", type = $"{fnName}QueryParams", source = "query" });
+
+            return new
+            {
+                functionName = fnName,
+                method = route.HttpMethod,
+                path = route.Path,
+                summary = route.Summary,
+                requestTypeName = requestType,
+                responseTypeName = responseType,
+                routeParams,
+                queryParams,
+                fetchParams,
+                hasBody = route.RequestBody != null,
+                hasQueryParams = queryParams.Count > 0
+            };
+        });
+
+        return new DocumentationResult
+        {
+            Format = "json-typescript",
+            Content = System.Text.Json.JsonSerializer.Serialize(new
+            {
+                projectName = analysis.ProjectName,
+                analyzedAt = analysis.AnalyzedAt,
+                interfaces,
+                routeTypes
+            }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }),
+            GeneratedAt = DateTime.UtcNow
+        };
+    }
+
+
+    private static IEnumerable<object> MapProperties(List<Models.Responses.PropertyInfo> props) =>
+        props.Select(p => new
+        {
+            name = p.Name,
+            type = p.Type,
+            isRequired = p.IsRequired,
+            summary = p.Summary,
+            nestedProperties = p.NestedProperties.Count > 0
+                ? MapProperties(p.NestedProperties)
+                : Enumerable.Empty<object>()
+        });
+
+    private static IEnumerable<object> MapPropertiesAsTs(List<Models.Responses.PropertyInfo> props) =>
+        props.Select(p => new
+        {
+            name = ToCamelCase(p.Name),
+            type = MapToTypeScriptType(p.Type),
+            isRequired = p.IsRequired,
+            summary = p.Summary,
+            nestedProperties = p.NestedProperties.Count > 0
+                ? MapPropertiesAsTs(p.NestedProperties)
+                : Enumerable.Empty<object>()
+        });
+
+
 }
+
+
+
+
+
