@@ -30,15 +30,8 @@ export function HomePage() {
     <div className={styles.page}>
       {/* Header */}
       <header className={styles.header}>
-        <div className={styles.logo}>
-          {/* Diamond-target mark: represents a schema contract */}
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
-            <polygon points="12,2 22,9 22,15 12,22 2,15 2,9" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-          <span>Driftless</span>
-        </div>
-        <p className={styles.tagline}>Eliminate API drift. Know what changed, instantly.</p>
+        <h1 className={styles.heading}>Analyze any ASP.NET Core repository</h1>
+        <p className={styles.tagline}>Paste a GitHub URL to extract all API routes and generate TypeScript types.</p>
       </header>
 
       {/* Search bar */}

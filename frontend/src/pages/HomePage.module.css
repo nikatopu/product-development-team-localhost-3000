@@ -13,38 +13,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   text-align: center;
   padding-top: 16px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  font-size: 24px;
+.heading {
+  font-size: 22px;
   font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.04em;
-}
-
-.logo svg {
-  color: var(--accent);
-  filter: drop-shadow(0 0 8px var(--accent-glow));
-}
-
-.logo span {
-  background: linear-gradient(135deg, #e2e8f0 0%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.03em;
+  margin: 0;
 }
 
 .tagline {
   font-size: 14px;
   color: var(--text-muted);
   margin: 0;
-  letter-spacing: 0.01em;
 }
 
 /* ─── Search bar ─────────────────────────────────── */
