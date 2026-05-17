@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { TypeScriptJsonResult, RouteType } from '../types/api';
 import { MethodBadge } from './MethodBadge';
-import styles from './TypeScriptPanel.module.css';
+import styles from './TypescriptPanel.module.css';
 
 interface Props {
   data: TypeScriptJsonResult;
