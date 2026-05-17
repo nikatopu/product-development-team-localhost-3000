@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: driftless-api
+    runtime: docker
+    dockerfilePath: ./back/Dockerfile
+    dockerContext: ./back
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      # After deploying the frontend to Vercel, set this to your Vercel URL.
+      # Example: https://driftless.vercel.app
+      # Leave unset to allow all origins (fine during initial setup).
+      - key: ALLOWED_ORIGINS
+        sync: false

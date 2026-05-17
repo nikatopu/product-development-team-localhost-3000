@@ -1,6 +1,6 @@
 import type { DocumentationResult, RoutesJsonResult, TypeScriptJsonResult } from '../types/api';
 
-const BASE_URL = 'http://localhost:5141';
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5141';
 
 async function post<T>(path: string, body: object): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
