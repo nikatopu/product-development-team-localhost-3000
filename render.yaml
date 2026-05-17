@@ -2,8 +2,6 @@ services:
   - type: web
     name: driftless-api
     runtime: docker
-    dockerfilePath: ./back/Dockerfile
-    dockerContext: ./back
     plan: free
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
