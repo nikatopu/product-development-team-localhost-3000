@@ -31,18 +31,19 @@
   width: 100%;
   padding: 12px 14px 12px 42px;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   color: var(--text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   transition: border-color 0.15s, box-shadow 0.15s;
   outline: none;
+  box-shadow: var(--shadow-sm);
 }
 
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-sm);
 }
 
 .input::placeholder {
@@ -50,7 +51,8 @@
 }
 
 .input:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .branchToggle {
@@ -59,19 +61,19 @@
   gap: 6px;
   padding: 0 14px;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   color: var(--text-muted);
   font-size: 12px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.15s, color 0.15s;
   white-space: nowrap;
 }
 
 .branchToggle:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 .submit {
@@ -79,20 +81,23 @@
   align-items: center;
   gap: 8px;
   padding: 0 22px;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #818cf8 100%);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius);
   color: #fff;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: opacity 0.15s, box-shadow 0.15s, transform 0.1s;
   white-space: nowrap;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 10px rgba(99,102,241,0.35);
 }
 
 .submit:hover:not(:disabled) {
-  opacity: 0.88;
+  opacity: 0.9;
+  box-shadow: 0 4px 18px rgba(99,102,241,0.5);
 }
 
 .submit:active:not(:disabled) {
@@ -100,18 +105,20 @@
 }
 
 .submit:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .spinner {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 @keyframes spin {
@@ -123,26 +130,27 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .branchInput {
   width: 100%;
   padding: 10px 14px;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   color: var(--text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
   box-sizing: border-box;
 }
 
 .branchInput:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .branchInput::placeholder {
@@ -154,10 +162,10 @@
   color: var(--text-muted);
   margin: 0;
   padding-left: 2px;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.4s ease;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }

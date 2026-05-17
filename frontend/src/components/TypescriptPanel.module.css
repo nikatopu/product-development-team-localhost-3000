@@ -4,11 +4,11 @@
   gap: 0;
 }
 
+/* ─── Tabs ──────────────────────────────────────── */
 .tabs {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 0;
   margin-bottom: 20px;
 }
 
@@ -27,12 +27,13 @@
   cursor: pointer;
   transition: color 0.15s;
   margin-bottom: -1px;
+  letter-spacing: 0.01em;
 }
 
 .tab:hover { color: var(--text); }
 
 .active {
-  color: var(--accent);
+  color: var(--accent-hover);
   border-bottom-color: var(--accent);
 }
 
@@ -40,42 +41,28 @@
   background: var(--surface-3);
   color: var(--text-muted);
   font-size: 10px;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: 10px;
   font-weight: 600;
 }
 
 .active .count {
-  background: var(--accent-glow);
-  color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent-hover);
 }
 
+/* ─── Content ───────────────────────────────────── */
 .content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
-.blockHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 14px;
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.blockLabel {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
+/* ─── Code block ────────────────────────────────── */
 .block {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -83,9 +70,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface-3);
+  background: var(--surface-2);
 }
 
 .interfaceName {
@@ -116,39 +103,42 @@
 
 .code {
   margin: 0;
-  padding: 14px 16px;
+  padding: 16px 18px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--text);
   overflow-x: auto;
   white-space: pre;
 }
 
+/* ─── Copy button ───────────────────────────────── */
 .copyBtn {
   display: flex;
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  background: var(--surface-2);
+  background: var(--surface-3);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
   font-size: 11px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .copyBtn:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-hover);
+  background: var(--accent-glow);
 }
 
+/* ─── Empty ─────────────────────────────────────── */
 .empty {
   font-size: 13px;
   color: var(--text-muted);
   font-style: italic;
   text-align: center;
-  padding: 32px;
+  padding: 40px;
 }
