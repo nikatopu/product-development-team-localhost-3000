@@ -153,3 +153,28 @@ Developers are currently forced to rely on:
 This creates a consistent and measurable productivity loss.
 
 The goal of this project is to replace that with a \*\*system-level solution t
+
+---
+
+### Deployment
+- Live Application: https://driftless.nikatopu.dev/?fbclid=IwY2xjawR68wtleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEeXekHFMXvhIS6eVlfN8DmkuiYfdGAafRFV0rvuvkJSV3tYlEloCft7f4jPSg_aem_l-R04lZ2vBaAbb6o6DhtHQ
+
+### Architecture
+- System Design: 03-build/architecture/system-design.md
+- Tech Stack: 03-build/architecture/tech-stack.md
+- Architecture Diagram 03-build/architecture/architecture-diagram.png
+
+### Experiment & MVP Evidence
+- Experiment Results: 03-build/experiments/experiment-results.md
+
+### Growth & Financials (Lab 9)
+- Growth Strategy: 04-gtm/growth-strategy.md
+- Unit Economics: 04-gtm/financials/unit-economics.md
+- Growth Model: 04-gtm/financials/driftless-growth-model.xlsx
+
+### Traction Evidence
+- MOU: 04-gtm/traction/memorandum-of-understanding.md
+
+### Process Documentation
+- AI Usage Log: docs/ai-usage-log.md
+- Standup Log: docs/standup-log.md
