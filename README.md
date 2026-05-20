@@ -8,6 +8,7 @@
 - Nikoloz Topuridze (Tech Lead)
 - Toma Danelia (Discovery Lead)
 - Giorgi Tkebuchava (Program Lead)
+- Nikoloz Bujiashvili (Design Lead)
 
 ---
 

@@ -9,13 +9,14 @@
 
 ## Team Members and Roles
 
-| Name              | Role           | Primary Accountability                      |
-| ----------------- | -------------- | ------------------------------------------- |
-| Giorgi Tkebuchava | Program Lead   | Deadlines, coordination, overall progress   |
-| Toma Danelia      | Discovery Lead | User interviews, research, validation       |
-| Nikoloz Topuridze | Tech Lead      | Codebase, architecture, technical decisions |
+| Name                  | Role           | Primary Accountability                         |
+| --------------------- | -------------- | ---------------------------------------------- |
+| Giorgi Tkebuchava     | Program Lead   | Deadlines, coordination, overall progress      |
+| Toma Danelia          | Discovery Lead | User interviews, research, validation          |
+| Nikoloz Topuridze     | Tech Lead      | Codebase, architecture, technical decisions    |
+| Nikoloz Bujiashvili   | Design Lead    | Prototypes, usability testing, design decisions|
 
-We are a team of three working students. Responsibilities are defined, but we support each other when workload becomes uneven, especially during high-pressure weeks.
+We are a team of four working students. Responsibilities are defined, but we support each other when workload becomes uneven, especially during high-pressure weeks.
 
 ---
 
@@ -131,11 +132,12 @@ If a member consistently under-contributes:
 
 ## Sign-Off
 
-| Name              | GitHub Username | Date           |
-| ----------------- | --------------- | -------------- |
-| Nikoloz Topuridze | nikatopu        | March 20, 2026 |
-| Toma Danelia      | tomadanelia     | March 20, 2026 |
-| Giorgi Tkebuchava | buchqi          | March 20, 2026 |
+| Name                | GitHub Username | Date           |
+| ------------------- | --------------- | -------------- |
+| Nikoloz Topuridze   | nikatopu        | March 20, 2026 |
+| Toma Danelia        | tomadanelia     | March 20, 2026 |
+| Giorgi Tkebuchava   | buchqi          | March 20, 2026 |
+| Nikoloz Bujiashvili | Bujo1           | May 20, 2026   |
 
 ---
 
