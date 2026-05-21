@@ -8,8 +8,8 @@ const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
 
 if (typeof window !== 'undefined' && posthogKey) {
   posthog.init(posthogKey, {
-    api_host: 'https://eu.i.posthog.com',
-    capture_pageview: false, // fired manually in App.tsx on each page state change
+    api_host: 'https://us.i.posthog.com',
+    capture_pageview: false, 
     loaded: (ph) => {
       if (import.meta.env.DEV) ph.debug();
     },
