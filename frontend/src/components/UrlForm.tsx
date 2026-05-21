@@ -8,7 +8,7 @@ interface Props {
 
 export function UrlForm({ onSubmit, loading }: Props) {
   const [url, setUrl] = useState('');
-  const [branch, setBranch] = useState('main');
+  const [branch, setBranch] = useState('master');
   const [showBranch, setShowBranch] = useState(false);
 
   const handleSubmit = (e:any) => {
