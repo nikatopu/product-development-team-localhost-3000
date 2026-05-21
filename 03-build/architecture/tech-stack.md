@@ -28,6 +28,7 @@ The team is deferring persistent storage, authentication, and cloud hosting to S
 | Styling           | CSS Modules                                                        | Scoped styles per component; no build-time dependency on a third-party UI library; team can iterate quickly on the visual language                                         | Tailwind CSS                           | Would require a build plugin and a new mental model; CSS Modules are already in the codebase                          | Nikoloz B. |
 | Testing           | Manual flow test against a seeded repo                             | Sufficient for Sprint 1 to verify core extraction correctness                                                                                                              | Vitest + React Testing Library         | Setup time not justified in Sprint 1; added to Sprint 2 plan                                                          | Nikoloz T. |
 | Hosting           | Vercel (frontend) + Render / Azure App Service (backend) (planned) | Vercel provides instant Next.js/Vite deploy from GitHub; Render provides free .NET hosting tier                                                                            | Railway                                | Less team familiarity; Vercel + Render combination is already understood from prior course work                       | Nikoloz T. |
+| Analytics         | PostHog (posthog-js)                                               | Free tier; captures custom frontend events (analysis sessions, tab switches, copy button clicks) with no backend changes required; dashboard accessible to the team        | Mixpanel, Amplitude                    | Both require paid tiers for meaningful event retention at this volume; PostHog free tier is sufficient for Sprint 1 validation data                                     | Nikoloz B. |
 | Diagramming       | Excalidraw                                                         | Fast collaborative editing; easy SVG export; no account required                                                                                                           | Lucidchart                             | No meaningful advantage for the team; requires account setup                                                          | Nikoloz B. |
 
 ---
@@ -95,7 +96,7 @@ The team is deferring persistent storage, authentication, and cloud hosting to S
 - **Git operations:** LibGit2Sharp, running inside the ASP.NET Core process
 - **Auth:** None in Sprint 1
 - **Database:** None in Sprint 1
-- **Analytics:** None in Sprint 1
+- **Analytics:** PostHog (posthog-js), frontend-only event capture, free tier
 - **Hosting:** Vercel (frontend) + Render (backend)
 
 No TBD entries remain.

@@ -86,22 +86,23 @@ By Sprint 1 review, Driftless must support one complete analysis flow on a publi
 
 ## 7. APIs and Integrations
 
-| Service or API        | Why it exists                                                                                 | Request direction           | Risk                                                                                    | Fallback plan                                                                     |
-| --------------------- | --------------------------------------------------------------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| GitHub (git clone)    | Source repositories are hosted on GitHub; LibGit2Sharp uses the git protocol to clone them    | Backend → GitHub (outbound) | GitHub rate-limiting for unauthenticated clones; large repos exceed 60-second UX target | Use seeded local repo mirror for Sprint 1 demo; add GitHub token auth in Sprint 2 |
-| Swagger UI (built-in) | Auto-generated interactive API docs at `/swagger`; used for backend development and debugging | Browser → Backend (inbound) | None — development tool only                                                            | Not a dependency for the user-facing flow                                         |
+| Service or API        | Why it exists                                                                                 | Request direction                     | Risk                                                                                    | Fallback plan                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| GitHub (git clone)    | Source repositories are hosted on GitHub; LibGit2Sharp uses the git protocol to clone them    | Backend → GitHub (outbound)           | GitHub rate-limiting for unauthenticated clones; large repos exceed 60-second UX target | Use seeded local repo mirror for Sprint 1 demo; add GitHub token auth in Sprint 2 |
+| Swagger UI (built-in) | Auto-generated interactive API docs at `/swagger`; used for backend development and debugging | Browser → Backend (inbound)           | None — development tool only                                                            | Not a dependency for the user-facing flow                                         |
+| PostHog (posthog-js)  | Captures frontend usage events (analysis sessions, route card views, TypeScript tab clicks)   | Browser → PostHog cloud (outbound)    | Free-tier dashboard is not publicly shareable; dashboard access shared with instructor via email | Dashboard invite sent to instructor; event data still captured regardless of share status |
 
-No third-party analytics, payment, or authentication services are used in Sprint 1.
+No payment or authentication services are used in Sprint 1.
 
 ---
 
 ## 8. Deployment Topology
 
-- Frontend hosted on: Vercel (planned); `http://localhost:5173` for local development
-- Backend hosted on: Render or Azure App Service (planned); `http://localhost:5141` for local development
+- Frontend hosted on: Vercel; `http://localhost:5173` for local development
+- Backend hosted on: Render; `http://localhost:5141` for local development
 - Database hosted on: Not applicable — no database in Sprint 1
-- Domain or public URL: TBD (Vercel preview URL for Sprint 1 review)
-- Analytics platform: Not yet instrumented in Sprint 1
+- Domain or public URL: https://driftless.nikatopu.dev/
+- Analytics platform: PostHog (posthog.com, free tier) — events captured from frontend via posthog-js; dashboard shared with instructor
 - Auth provider: Not applicable in Sprint 1
 - File storage: OS temp directory (`Path.GetTempPath()`), ephemeral per request
 
@@ -129,7 +130,7 @@ No runtime AI feature is present in Sprint 1. Driftless uses static code analysi
 - **Auth risks:** No authentication in Sprint 1. Any user can submit any public GitHub URL. Risk of abuse (high-frequency requests, very large repos) is accepted for the demo phase.
 - **Sensitive data handled:** None. No user data is collected or stored. Repository source code is cloned to temp and immediately deleted.
 - **Failure mode if main service goes down:** Analysis is unavailable; frontend shows an error state. No degraded mode is implemented in Sprint 1.
-- **Logging and monitoring plan for Sprint 1:** ASP.NET Core default console logging captures exceptions. Swagger UI at `/swagger` allows manual API testing. No external monitoring service yet.
+- **Logging and monitoring plan for Sprint 1:** ASP.NET Core default console logging captures exceptions. Swagger UI at `/swagger` allows manual API testing. PostHog captures frontend usage events (analysis sessions, errors, tab interactions); dashboard shared with instructor.
 - **One thing we will not promise yet:** Support for private repositories, repositories requiring authentication tokens, or frameworks other than ASP.NET Core.
 
 ---

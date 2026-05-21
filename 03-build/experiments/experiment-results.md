@@ -18,7 +18,9 @@ We will know this is true when at least 60% of tested users say they would activ
 
 ## Method
 
-A short validation sprint was conducted using direct product concept demonstrations and feedback collection from relevant users.
+**Conducted:** May 10–14, 2026  
+**Format:** In-person and remote product concept demonstrations with structured feedback collection  
+**Conducted by:** Giorgi Tkebuchava, Toma Danelia
 
 ### Process:
 

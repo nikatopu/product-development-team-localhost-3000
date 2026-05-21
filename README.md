@@ -1,4 +1,4 @@
-# localhost:3000 — API Communication Tool
+# Driftless — Automated API Documentation for ASP.NET Core
 
 **Course:** CS-PD-2026  
 **Team:** localhost:3000
@@ -16,7 +16,7 @@
 
 Frontend, backend, and mobile developers working in small to mid-sized teams lose approximately **4 to 16 hours per week per developer** due to unreliable, delayed, or inconsistent API documentation and lack of a single source of truth for API behavior.
 
-Because API specifications are not synchronized with implementation, developers are forced into:
+Because API specifications are not synchronised with implementation, developers are forced into:
 
 - Repeated debugging loops
 - Manual validation using tools like Postman
@@ -38,8 +38,8 @@ The problem is not lack of documentation, but lack of **trust in API understandi
 Based on 6 interviews with developers:
 
 - "It can cost several hours or even days."
-- "Actual API behavior doesn’t match documentation."
-- "I don’t know request/response types until documentation is written."
+- "Actual API behavior doesn't match documentation."
+- "I don't know request/response types until documentation is written."
 - "It feels repetitive and time wasting."
 
 **Observed patterns:**
@@ -52,80 +52,54 @@ Based on 6 interviews with developers:
 
 ---
 
-## Objective
+## Solution: Driftless
 
-Build a software solution that creates a **trusted, real-time, and authoritative source of API truth**, reducing:
-
-- Manual documentation effort
-- Integration errors
-- Communication overhead
-
----
-
-## Proposed Solution (Initial Direction)
-
-A lightweight developer tool that:
-
-- Automatically captures API definitions from code
-- Generates **synchronized API contracts**
-- Keeps documentation aligned with implementation in real time
-- Allows frontend developers to consume APIs without clarification loops
-
-Possible formats:
-
-- Web dashboard
-- CLI tool
-- Development plugin (Node.js / Express)
+Driftless is an automated API documentation generator for ASP.NET Core repositories. A developer pastes a public GitHub repository URL, Driftless scans the .NET codebase using Roslyn to extract all API routes, HTTP methods, request/response schemas, and generates TypeScript type definitions — with no manual configuration required.
 
 ---
 
 ## Target Users
 
-- Backend developers building APIs
-- Frontend developers integrating APIs
+- Backend developers building APIs in ASP.NET Core
+- Frontend developers integrating with .NET APIs
 - Full-stack developers working across both layers
 - Small to mid-sized teams without strict API governance
 - Student teams and freelance developers
 
 ---
 
-## Scope (MVP)
+## Scope (Sprint 1 MVP)
 
 ### In Scope
 
-- Detecting or defining API endpoints
-- Generating accurate API specifications
-- Keeping documentation synchronized with code
-- Sharing updates between backend and frontend
-- Simple interface for exploring API structure
+- Public GitHub repository URL input
+- Roslyn-based ASP.NET Core route and schema extraction
+- HTTP method, path, controller, and request/response schema detection
+- TypeScript interface generation from response models
+- JSON route output and OpenAPI-compatible generation
+- Results rendered in a web dashboard (routes tab + TypeScript tab)
+- Usage analytics via PostHog
 
-### Out of Scope (Initial)
+### Out of Scope (Sprint 2+)
 
-- Full API testing platforms (Postman alternatives)
-- Enterprise-level integrations
-- Complex authentication/authorization systems
-- Large-scale API gateways
-
----
-
-## Key Differentiation
-
-Unlike existing tools (Swagger, Postman):
-
-- Focus on **accuracy and synchronization**, not just documentation
-- Reduce **trust gap** between implementation and docs
-- Minimize **manual effort and communication loops**
+- Authentication and private repository support
+- Multi-framework support (Express, FastAPI, Django, Spring Boot)
+- Persistent storage and result caching
+- CI/CD pipeline integration
+- Export-to-file and streaming progress
 
 ---
 
-## Tech Direction
+## Tech Stack
 
-Planned stack (subject to iteration):
-
-- Frontend: React / Next.js
-- Backend: Node.js
-- API schema generation: OpenAPI or custom parser
-- Optional integration: GitHub / CI pipelines
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19 + Vite + TypeScript |
+| Backend | ASP.NET Core 10.0 (C#) |
+| Code Analysis | Microsoft.CodeAnalysis.CSharp (Roslyn) |
+| Git Operations | LibGit2Sharp 0.30 |
+| Hosting | Vercel (frontend) + Render (backend) |
+| Analytics | PostHog (posthog-js, free tier) |
 
 ---
 
@@ -134,47 +108,40 @@ Planned stack (subject to iteration):
 - [x] Interviews completed
 - [x] Affinity mapping completed
 - [x] Pattern analysis completed
-- [x] Problem statement finalized
-- [ ] Solution validation
-- [ ] MVP development
+- [x] Problem statement finalised
+- [x] High-fidelity prototype completed and usability-tested (5 participants)
+- [x] Solution validated (70% adoption threshold exceeded, 10 participants)
+- [x] MVP built and deployed
+- [x] Analytics instrumented (PostHog)
+- [x] Growth strategy, unit economics, and financial model complete
+- [x] Design partner MOU signed
 
 ---
 
-## Summary
-
-The core problem is not communication itself, but the absence of a **reliable system that guarantees correct API understanding**.
-
-Developers are currently forced to rely on:
-
-- manual testing
-- human clarification
-- fragmented tools
-
-This creates a consistent and measurable productivity loss.
-
-The goal of this project is to replace that with a \*\*system-level solution t
-
----
+## Deliverables
 
 ### Deployment
-- Live Application: https://driftless.nikatopu.dev/?fbclid=IwY2xjawR68wtleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEeXekHFMXvhIS6eVlfN8DmkuiYfdGAafRFV0rvuvkJSV3tYlEloCft7f4jPSg_aem_l-R04lZ2vBaAbb6o6DhtHQ
+- **Live Application:** https://driftless.nikatopu.dev/
+- **Analytics Dashboard:** [03-build/analytics/dashboard-link.md](03-build/analytics/dashboard-link.md) (PostHog — shared with instructor via email)
+
+### Design
+- **Prototype:** [02-design/prototypes/high-fidelity/figma-link.md](02-design/prototypes/high-fidelity/figma-link.md)
+- **Usability Testing:** [02-design/user-testing/usability-findings.md](02-design/user-testing/usability-findings.md)
 
 ### Architecture
-- System Design: 03-build/architecture/system-design.md
-- Tech Stack: 03-build/architecture/tech-stack.md
-- Architecture Diagram 03-build/architecture/architecture-diagram.png
+- **System Design:** [03-build/architecture/system-design.md](03-build/architecture/system-design.md)
+- **Tech Stack:** [03-build/architecture/tech-stack.md](03-build/architecture/tech-stack.md)
+- **Architecture Diagram:** [03-build/architecture/architecture-diagram.svg](03-build/architecture/architecture-diagram.svg)
 
-### Experiment & MVP Evidence
-- Experiment Results: 03-build/experiments/experiment-results.md
+### Experiment and MVP Evidence
+- **Experiment Results:** [03-build/experiments/experiment-results.md](03-build/experiments/experiment-results.md)
 
-### Growth & Financials (Lab 9)
-- Growth Strategy: 04-gtm/growth-strategy.md
-- Unit Economics: 04-gtm/financials/unit-economics.md
-- Growth Model: 04-gtm/financials/driftless-growth-model.xlsx
-
-### Traction Evidence
-- MOU: 04-gtm/traction/memorandum-of-understanding.md
+### Growth and Financials
+- **Growth Strategy:** [04-gtm/growth-strategy.md](04-gtm/growth-strategy.md)
+- **Unit Economics:** [04-gtm/financials/unit-economics.md](04-gtm/financials/unit-economics.md)
+- **Growth Model:** [04-gtm/financials/driftless-growth-model.xlsx](04-gtm/financials/driftless-growth-model.xlsx)
+- **Traction Evidence (MOU):** [04-gtm/traction/memorandum-of-understanding.md](04-gtm/traction/memorandum-of-understanding.md)
 
 ### Process Documentation
-- AI Usage Log: docs/ai-usage-log.md
-- Standup Log: docs/standup-log.md
+- **AI Usage Log:** [Docs/ai-usage-log.md](Docs/ai-usage-log.md)
+- **Standup Log:** [Docs/standup-log.md](Docs/standup-log.md)

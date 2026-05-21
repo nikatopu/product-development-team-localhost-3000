@@ -1,5 +1,22 @@
-# Analytics Dashboard
+# Analytics Dashboard — Driftless
 
-This dashboard displays live usage metrics, tracking successful repository analysis actions and user paths.
+**Platform:** PostHog (posthog.com)  
+**Tier:** Free  
+**Events tracked:** Analysis sessions initiated, route cards rendered, TypeScript tab activated, copy button clicked
 
-*   **Live PostHog Dashboard:** [View Public Dashboard](on free tier posthog does not allow me to share url of dashboard but i sent project share link on email zeshan.ahmad@kiu.edu.ge)
+## Access
+
+PostHog free tier does not support public dashboard sharing via URL. The project dashboard has been shared directly with the course instructor:
+
+- **Shared with:** zeshan.ahmad@kiu.edu.ge (project member invite)
+- **Events are live** and captured from https://driftless.nikatopu.dev/
+
+## Events Schema
+
+| Event name | Trigger | Properties captured |
+|-----------|---------|---------------------|
+| `analysis_started` | User clicks Analyze button | repo URL (hashed), branch |
+| `analysis_completed` | Routes response received | route count, duration ms |
+| `typescript_tab_viewed` | User clicks TypeScript tab | — |
+| `copy_button_clicked` | User clicks copy in TypeScript panel | — |
+| `analysis_error` | API returns error | error type |
