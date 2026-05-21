@@ -15,8 +15,12 @@ PostHog free tier does not support public dashboard sharing via URL. The project
 
 | Event name | Trigger | Properties captured |
 |-----------|---------|---------------------|
-| `analysis_started` | User clicks Analyze button | repo URL (hashed), branch |
 | `analysis_completed` | Routes response received | route count, duration ms |
-| `typescript_tab_viewed` | User clicks TypeScript tab | — |
+| `page view` | User visited website | — |
 | `copy_button_clicked` | User clicks copy in TypeScript panel | — |
 | `analysis_error` | API returns error | error type |
+
+## Live Dashboard Screenshot
+Below is a screenshot of the active PostHog dashboard showing real event data from user sessions:
+
+![PostHog Analytics Dashboard](dashboard.png)
