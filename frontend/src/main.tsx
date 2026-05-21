@@ -4,12 +4,15 @@ import posthog from 'posthog-js'
 import './index.css'
 import App from './App.tsx'
 
-if (typeof window !== 'undefined') {
-  posthog.init('phc_uR2ykKpvm9VFPUMr2iyemzvBHSwnAPBviitBaLARFJtm', {
-    api_host: 'https://eu.i.posthog.com', 
+const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
+
+if (typeof window !== 'undefined' && posthogKey) {
+  posthog.init(posthogKey, {
+    api_host: 'https://eu.i.posthog.com',
+    capture_pageview: false, // fired manually in App.tsx on each page state change
     loaded: (ph) => {
-      if (import.meta.env.DEV) ph.debug(); 
-    }
+      if (import.meta.env.DEV) ph.debug();
+    },
   });
 }
 
