@@ -146,6 +146,6 @@ Driftless is an automated API documentation generator for ASP.NET Core repositor
 - **AI Usage Log:** [Docs/ai-usage-log.md](Docs/ai-usage-log.md)
 - **Standup Log:** [Docs/standup-log.md](Docs/standup-log.md)
 ## Launch Video & Presentation Materials
-* **60-Second Launch Video:** [Watch the Product Demo on YouTube](https://youtube.com) *
+* **60-Second Launch Video:** [Watch the Product Demo on YouTube](https://www.youtube.com/watch?v=fR8jto5LRFw) 
 * **60-Second Video Script:** Detailed recording sequence documented in [09-final/video-script.md](09-final/video-script.md)
 * **Venture Traction Ledger:** Current metrics, PostHog events, and MOU logs documented in [04-gtm/traction/traction.md](04-gtm/traction/traction.md)
