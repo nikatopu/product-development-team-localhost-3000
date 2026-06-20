@@ -12,6 +12,11 @@
   gap: 1rem;
 }
 
+.logo {
+  width: 100%;
+  max-width: 10em;
+}
+
 .brand {
   display: flex;
   align-items: center;

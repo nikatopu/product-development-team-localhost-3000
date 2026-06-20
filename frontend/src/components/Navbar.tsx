@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import type { Page } from '../App';
-import { useAuth } from '../contexts/AuthContext';
-import { fetchNotifications } from '../lib/ApiClient';
-import styles from './Navbar.module.css';
+import { useState, useRef, useEffect } from "react";
+import type { Page } from "../App";
+import { useAuth } from "../contexts/AuthContext";
+import { fetchNotifications } from "../lib/ApiClient";
+import styles from "./Navbar.module.css";
 
 interface NavbarProps {
   currentPage: Page;
@@ -10,7 +10,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ currentPage, onNavigate }: NavbarProps) {
-  const { user, isAuthenticated, isLoading, login, logout, accessToken } = useAuth();
+  const { user, isAuthenticated, isLoading, login, logout, accessToken } =
+    useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -22,14 +23,21 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
 
     const load = async () => {
       try {
-        const { unreadCount: count } = await fetchNotifications(accessToken, { unreadOnly: true });
+        const { unreadCount: count } = await fetchNotifications(accessToken, {
+          unreadOnly: true,
+        });
         if (mounted) setUnreadCount(count);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     };
 
     load();
     const interval = setInterval(load, 60_000);
-    return () => { mounted = false; clearInterval(interval); };
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [isAuthenticated, accessToken]);
 
   // Close menu on outside click
@@ -39,39 +47,43 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
         setShowUserMenu(false);
       }
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   return (
     <nav className={styles.nav}>
-      <button type="button" className={styles.brand} onClick={() => onNavigate('home')}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
-          <polygon points="12,2 22,9 22,15 12,22 2,15 2,9" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-        <span>Driftless</span>
+      <button
+        type="button"
+        className={styles.brand}
+        onClick={() => onNavigate("home")}
+      >
+        <img
+          src="/driftless-logo.svg"
+          alt="Driftless logo"
+          className={styles.logo}
+        />
       </button>
 
       <div className={styles.center}>
         <button
           type="button"
-          className={`${styles.link} ${currentPage === 'home' ? styles.active : ''}`}
-          onClick={() => onNavigate('home')}
+          className={`${styles.link} ${currentPage === "home" ? styles.active : ""}`}
+          onClick={() => onNavigate("home")}
         >
           Home
         </button>
         <button
           type="button"
-          className={`${styles.link} ${currentPage === 'how-to-use' ? styles.active : ''}`}
-          onClick={() => onNavigate('how-to-use')}
+          className={`${styles.link} ${currentPage === "how-to-use" ? styles.active : ""}`}
+          onClick={() => onNavigate("how-to-use")}
         >
           How to Use
         </button>
         <button
           type="button"
-          className={`${styles.link} ${currentPage === 'about' ? styles.active : ''}`}
-          onClick={() => onNavigate('about')}
+          className={`${styles.link} ${currentPage === "about" ? styles.active : ""}`}
+          onClick={() => onNavigate("about")}
         >
           About
         </button>
@@ -79,15 +91,15 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
           <>
             <button
               type="button"
-              className={`${styles.link} ${currentPage === 'dashboard' ? styles.active : ''}`}
-              onClick={() => onNavigate('dashboard')}
+              className={`${styles.link} ${currentPage === "dashboard" ? styles.active : ""}`}
+              onClick={() => onNavigate("dashboard")}
             >
               Dashboard
             </button>
             <button
               type="button"
-              className={`${styles.link} ${currentPage === 'repos' ? styles.active : ''}`}
-              onClick={() => onNavigate('repos')}
+              className={`${styles.link} ${currentPage === "repos" ? styles.active : ""}`}
+              onClick={() => onNavigate("repos")}
             >
               Repositories
             </button>
@@ -105,14 +117,23 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               type="button"
               className={styles.bellBtn}
               title="Notifications"
-              onClick={() => onNavigate('notifications')}
+              onClick={() => onNavigate("notifications")}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+              >
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
               {unreadCount > 0 && (
-                <span className={styles.badge}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+                <span className={styles.badge}>
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
               )}
             </button>
 
@@ -120,13 +141,15 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             <button
               type="button"
               className={styles.avatarBtn}
-              onClick={() => setShowUserMenu(v => !v)}
+              onClick={() => setShowUserMenu((v) => !v)}
             >
               <img
                 src={user.avatarUrl}
                 alt={user.username}
                 className={styles.avatar}
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
               />
             </button>
 
@@ -134,14 +157,18 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
               <div className={styles.menu}>
                 <div className={styles.menuHeader}>
                   <span className={styles.menuUsername}>@{user.username}</span>
-                  {user.email && <span className={styles.menuEmail}>{user.email}</span>}
+                  {user.email && (
+                    <span className={styles.menuEmail}>{user.email}</span>
+                  )}
                 </div>
                 <div className={styles.menuDivider} />
                 <button
                   type="button"
                   className={styles.menuItem}
-                  onClick={() => { setShowUserMenu(false); onNavigate('repos'); }}
-
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    onNavigate("repos");
+                  }}
                 >
                   Repositories
                 </button>
@@ -149,7 +176,10 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                 <button
                   type="button"
                   className={`${styles.menuItem} ${styles.menuItemDanger}`}
-                  onClick={() => { setShowUserMenu(false); logout(); }}
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    logout();
+                  }}
                 >
                   Sign out
                 </button>

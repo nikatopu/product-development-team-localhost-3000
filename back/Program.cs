@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.RateLimiting;
 using ApiDocGen.Data;
@@ -80,10 +81,21 @@ if (!string.IsNullOrWhiteSpace(jwtSecret))
 }
 else
 {
-    // No JWT secret — auth disabled, all [Authorize] endpoints return 401
-    builder.Services.AddAuthentication();
+    // No JWT secret — register JWT bearer with a throwaway key so [Authorize] returns 401
+    // instead of crashing with "No DefaultChallengeScheme found".
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(opts =>
+        {
+            opts.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(RandomNumberGenerator.GetBytes(32)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+            };
+        });
     builder.Services.AddAuthorization();
-    Console.WriteLine("WARNING: Jwt:Secret not configured. Authentication is disabled.");
+    Console.WriteLine("WARNING: Jwt:Secret not configured. All authenticated requests will return 401.");
 }
 
 // ── Core analysis services ─────────────────────────────────────────────────
