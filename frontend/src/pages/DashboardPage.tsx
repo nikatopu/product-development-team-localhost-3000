@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchConnectedRepos } from '../lib/ApiClient';
 import type { Repository } from '../types/api';
+import type { Page } from '../App';
 import styles from './DashboardPage.module.css';
 
 interface Props {
-  onNavigate: (page: string, repoId?: string) => void;
+  onNavigate: (page: Page, repoId?: string) => void;
 }
 
 export function DashboardPage({ onNavigate }: Props) {
