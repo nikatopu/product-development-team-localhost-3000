@@ -1,4 +1,4 @@
-# Driftless — Automated API Documentation for ASP.NET Core
+# Driftless - Automated API Documentation for ASP.NET Core
 
 **Course:** CS-PD-2026  
 **Team:** localhost:3000

@@ -1,0 +1,339 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e6edf3;
+  margin: 0 0 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: #7d8590;
+  margin: 0;
+}
+
+.connectBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: #238636;
+  border: 1px solid #2ea043;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.connectBtn:hover { background: #2ea043; }
+
+/* Error banner */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #2d1515;
+  border: 1px solid #8b3030;
+  border-radius: 8px;
+  color: #f85149;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #7d8590;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  font-size: 0.9rem;
+}
+
+.dismiss:hover { color: #e6edf3; }
+
+/* Loading / empty */
+.loading {
+  text-align: center;
+  color: #7d8590;
+  padding: 3rem 0;
+  font-size: 0.875rem;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #7d8590;
+}
+
+.empty h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e6edf3;
+  margin: 0;
+}
+
+.empty p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Repo list */
+.repoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.repoCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color 0.15s;
+}
+
+.repoCard:hover { border-color: #58a6ff40; }
+
+.repoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.repoInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.repoName {
+  font-weight: 600;
+  color: #58a6ff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.statusConnected { background: #1f3a4f; color: #58a6ff; border: 1px solid #1f6feb; }
+.statusScanning  { background: #2d2a1a; color: #d29922; border: 1px solid #9e6a03; }
+.statusReady     { background: #162e1c; color: #3fb950; border: 1px solid #238636; }
+.statusFailed    { background: #2d1515; color: #f85149; border: 1px solid #8b3030; }
+
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #d2992260;
+  border-top-color: #d29922;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.repoActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.scanBtn {
+  padding: 0.35rem 0.85rem;
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.scanBtn:hover:not(:disabled) { background: #30363d; }
+.scanBtn:disabled { opacity: 0.5; cursor: default; }
+
+.disconnectBtn {
+  padding: 0.35rem 0.85rem;
+  background: transparent;
+  border: 1px solid #30363d;
+  color: #7d8590;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.disconnectBtn:hover { border-color: #8b3030; color: #f85149; }
+
+.scanStats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: #7d8590;
+}
+
+.breakingCount {
+  color: #d29922;
+  font-weight: 500;
+}
+
+.lastScanned {
+  margin-left: auto;
+}
+
+/* Connect dialog */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+}
+
+.dialog {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #21262d;
+}
+
+.dialogHeader h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e6edf3;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #7d8590;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+.closeBtn:hover { color: #e6edf3; background: #21262d; }
+
+.dialogSearch {
+  margin: 0.75rem 1.25rem;
+  padding: 0.5rem 0.75rem;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #e6edf3;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.dialogSearch:focus { border-color: #58a6ff; }
+
+.availableList {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.availableItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.availableItem:hover { background: #21262d; }
+
+.availableName {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: #e6edf3;
+  font-weight: 500;
+}
+
+.availableDesc {
+  font-size: 0.78rem;
+  color: #7d8590;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.privateBadge {
+  padding: 0.1rem 0.4rem;
+  background: #2d2a1a;
+  border: 1px solid #9e6a03;
+  color: #d29922;
+  border-radius: 4px;
+  font-size: 0.7rem;
+}
+
+.noResults {
+  text-align: center;
+  color: #7d8590;
+  font-size: 0.875rem;
+  padding: 2rem 0;
+}

@@ -67,3 +67,7 @@ build/
 # Docker (optional)
 # =========================
 docker-compose.override.yml
+
+/back/appsettings.Development.json
+/back/appsettings.Local.json
+/back/appsettings.*.json

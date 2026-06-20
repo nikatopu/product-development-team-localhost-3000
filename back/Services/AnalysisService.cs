@@ -14,6 +14,8 @@ public class AnalysisService : IAnalysisService
         ["HttpGet", "HttpPost", "HttpPut", "HttpDelete", "HttpPatch", "HttpHead", "HttpOptions"];
 
     private Dictionary<string, ClassDeclarationSyntax> _typeRegistry = new();
+    private Dictionary<string, RecordDeclarationSyntax> _recordRegistry = new();
+    private Dictionary<string, List<string>> _enumRegistry = new();
 
     public AnalysisService(ILogger<AnalysisService> logger) => _logger = logger;
 
@@ -25,8 +27,10 @@ public class AnalysisService : IAnalysisService
 
         _logger.LogInformation("Analyzing {Count} .cs files", csFiles.Count);
 
-        _typeRegistry = await BuildTypeRegistryAsync(csFiles);
-        _logger.LogInformation("Type registry built with {Count} types", _typeRegistry.Count);
+        (_typeRegistry, _recordRegistry, _enumRegistry) = await BuildTypeRegistryAsync(csFiles);
+        _logger.LogInformation(
+            "Type registry: {Classes} classes, {Records} records, {Enums} enums",
+            _typeRegistry.Count, _recordRegistry.Count, _enumRegistry.Count);
 
         var routes = new List<RouteInfo>();
         var controllerNames = new HashSet<string>();
@@ -63,6 +67,7 @@ public class AnalysisService : IAnalysisService
             ProjectName = Path.GetFileName(localPath),
             AnalyzedAt = DateTime.UtcNow,
             Routes = routes,
+            Enums = _enumRegistry,
             Metadata = new AnalysisMetadata
             {
                 TotalRoutes = routes.Count,
@@ -73,10 +78,15 @@ public class AnalysisService : IAnalysisService
         };
     }
 
-    private async Task<Dictionary<string, ClassDeclarationSyntax>> BuildTypeRegistryAsync(
-        List<string> csFiles)
+    private static async Task<(
+        Dictionary<string, ClassDeclarationSyntax>,
+        Dictionary<string, RecordDeclarationSyntax>,
+        Dictionary<string, List<string>>)>
+        BuildTypeRegistryAsync(List<string> csFiles)
     {
-        var registry = new Dictionary<string, ClassDeclarationSyntax>();
+        var classes = new Dictionary<string, ClassDeclarationSyntax>();
+        var records = new Dictionary<string, RecordDeclarationSyntax>();
+        var enums = new Dictionary<string, List<string>>();
 
         foreach (var file in csFiles)
         {
@@ -84,27 +94,29 @@ public class AnalysisService : IAnalysisService
             var tree = CSharpSyntaxTree.ParseText(code);
             var root = await tree.GetRootAsync();
 
-            var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>();
-            foreach (var cls in classes)
+            foreach (var cls in root.DescendantNodes().OfType<ClassDeclarationSyntax>())
             {
                 var name = cls.Identifier.Text;
-                if (!registry.ContainsKey(name))
-                    registry[name] = cls;
+                if (!classes.ContainsKey(name))
+                    classes[name] = cls;
             }
 
-            var records = root.DescendantNodes().OfType<RecordDeclarationSyntax>();
-            foreach (var record in records)
+            foreach (var rec in root.DescendantNodes().OfType<RecordDeclarationSyntax>())
             {
-                var name = record.Identifier.Text;
-                if (!registry.ContainsKey(name))
-                {
-                   
-                    registry[$"record:{name}"] = null!;
-                }
+                var name = rec.Identifier.Text;
+                if (!records.ContainsKey(name))
+                    records[name] = rec;
+            }
+
+            foreach (var enumDecl in root.DescendantNodes().OfType<EnumDeclarationSyntax>())
+            {
+                var name = enumDecl.Identifier.Text;
+                if (!enums.ContainsKey(name))
+                    enums[name] = enumDecl.Members.Select(m => m.Identifier.Text).ToList();
             }
         }
 
-        return registry;
+        return (classes, records, enums);
     }
 
     private List<Models.Responses.PropertyInfo> ResolveTypeProperties(
@@ -116,11 +128,23 @@ public class AnalysisService : IAnalysisService
         if (inner != typeName)
             return ResolveTypeProperties(inner, depth);
 
-        if (IsPrimitiveType(typeName)) return [];
+        var cleanName = typeName.TrimEnd('?');
 
-        if (!_typeRegistry.TryGetValue(typeName, out var classDef) || classDef == null)
-            return [];
+        if (IsPrimitiveType(cleanName)) return [];
+        if (_enumRegistry.ContainsKey(cleanName)) return [];
 
+        if (_typeRegistry.TryGetValue(cleanName, out var classDef))
+            return ResolveClassProperties(classDef, depth);
+
+        if (_recordRegistry.TryGetValue(cleanName, out var recordDef))
+            return ResolveRecordProperties(recordDef, depth);
+
+        return [];
+    }
+
+    private List<Models.Responses.PropertyInfo> ResolveClassProperties(
+        ClassDeclarationSyntax classDef, int depth)
+    {
         var properties = new List<Models.Responses.PropertyInfo>();
 
         var propDeclarations = classDef.Members
@@ -133,10 +157,10 @@ public class AnalysisService : IAnalysisService
             var isRequired = !propTypeName.EndsWith("?")
                 && prop.Modifiers.Any(m => m.ToString() == "required");
             var summary = ExtractXmlSummaryFromNode(prop);
-
-            var nestedProperties = IsPrimitiveType(UnwrapGenericType(propTypeName))
+            var unwrapped = UnwrapGenericType(propTypeName);
+            var nested = (IsPrimitiveType(unwrapped) || _enumRegistry.ContainsKey(unwrapped.TrimEnd('?')))
                 ? []
-                : ResolveTypeProperties(UnwrapGenericType(propTypeName), depth + 1);
+                : ResolveTypeProperties(unwrapped, depth + 1);
 
             properties.Add(new Models.Responses.PropertyInfo
             {
@@ -144,15 +168,13 @@ public class AnalysisService : IAnalysisService
                 Type = propTypeName,
                 IsRequired = isRequired,
                 Summary = summary,
-                NestedProperties = nestedProperties
+                NestedProperties = nested
             });
         }
 
-        var fieldDeclarations = classDef.Members
+        foreach (var field in classDef.Members
             .OfType<FieldDeclarationSyntax>()
-            .Where(f => f.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)));
-
-        foreach (var field in fieldDeclarations)
+            .Where(f => f.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword))))
         {
             var fieldTypeName = field.Declaration.Type.ToString();
             foreach (var variable in field.Declaration.Variables)
@@ -170,9 +192,58 @@ public class AnalysisService : IAnalysisService
         return properties;
     }
 
+    private List<Models.Responses.PropertyInfo> ResolveRecordProperties(
+        RecordDeclarationSyntax recordDef, int depth)
+    {
+        var properties = new List<Models.Responses.PropertyInfo>();
+
+        // Primary constructor parameters (positional record: record Foo(string Name, int Age))
+        if (recordDef.ParameterList != null)
+        {
+            foreach (var param in recordDef.ParameterList.Parameters)
+            {
+                var paramTypeName = param.Type?.ToString() ?? "object";
+                var unwrapped = UnwrapGenericType(paramTypeName);
+                var nested = (IsPrimitiveType(unwrapped) || _enumRegistry.ContainsKey(unwrapped.TrimEnd('?')))
+                    ? []
+                    : ResolveTypeProperties(unwrapped, depth + 1);
+
+                properties.Add(new Models.Responses.PropertyInfo
+                {
+                    Name = param.Identifier.Text,
+                    Type = paramTypeName,
+                    IsRequired = !paramTypeName.EndsWith("?"),
+                    NestedProperties = nested
+                });
+            }
+        }
+
+        // Additional members (property record: record Foo { public string Name { get; init; } })
+        foreach (var prop in recordDef.Members
+            .OfType<PropertyDeclarationSyntax>()
+            .Where(p => p.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword))))
+        {
+            var propTypeName = prop.Type.ToString();
+            var unwrapped = UnwrapGenericType(propTypeName);
+            var nested = (IsPrimitiveType(unwrapped) || _enumRegistry.ContainsKey(unwrapped.TrimEnd('?')))
+                ? []
+                : ResolveTypeProperties(unwrapped, depth + 1);
+
+            properties.Add(new Models.Responses.PropertyInfo
+            {
+                Name = prop.Identifier.Text,
+                Type = propTypeName,
+                IsRequired = prop.Modifiers.Any(m => m.ToString() == "required"),
+                Summary = ExtractXmlSummaryFromNode(prop),
+                NestedProperties = nested
+            });
+        }
+
+        return properties;
+    }
+
     private static string UnwrapGenericType(string typeName)
     {
-        
         var match = Regex.Match(typeName,
             @"^(?:List|IList|IEnumerable|ICollection|Task|ActionResult|IActionResult)<(.+)>$");
         return match.Success ? match.Groups[1].Value.Trim() : typeName;
@@ -248,8 +319,8 @@ public class AnalysisService : IAnalysisService
 
             var summary = ExtractXmlSummary(method);
             var parameters = ExtractParameters(method);
-            var requestBody = ExtractRequestBody(method);  
-            var responses = ExtractResponses(method);       
+            var requestBody = ExtractRequestBody(method);
+            var responses = ExtractResponses(method);
 
             var attributes = method.AttributeLists
                 .SelectMany(al => al.Attributes)
@@ -405,7 +476,7 @@ public class AnalysisService : IAnalysisService
                 StatusCode = statusCode,
                 TypeName = typeName,
                 Description = GetStatusDescription(statusCode),
-                Properties = ResolveTypeProperties(typeName) 
+                Properties = ResolveTypeProperties(typeName)
             });
         }
 
@@ -422,7 +493,7 @@ public class AnalysisService : IAnalysisService
                 StatusCode = 200,
                 TypeName = typeName,
                 Description = "OK",
-                Properties = ResolveTypeProperties(typeName) // ← expand
+                Properties = ResolveTypeProperties(typeName)
             });
         }
 

@@ -11,6 +11,7 @@ interface AnalysisState {
   loading: boolean;
   error: string | null;
   activeMode: ViewMode;
+  progress: { stage: string; percent: number } | null;
 }
 
 export function useAnalysis() {
@@ -20,13 +21,26 @@ export function useAnalysis() {
     loading: false,
     error: null,
     activeMode: 'routes',
+    progress: null,
   });
 
+  const setProgress = (stage: string, percent: number) =>
+    setState(s => ({ ...s, progress: { stage, percent } }));
+
   const analyze = async (repoUrl: string, branch?: string) => {
-    setState(s => ({ ...s, loading: true, error: null, routes: null, typescript: null }));
+    setState(s => ({
+      ...s,
+      loading: true,
+      error: null,
+      routes: null,
+      typescript: null,
+      progress: { stage: 'Connecting…', percent: 0 },
+    }));
     const startTime = performance.now();
 
     try {
+      setProgress('Cloning repository…', 10);
+
       const [routes, typescript] = await Promise.all([
         fetchRoutesJson({ repoUrl, branch }),
         fetchTypeScriptJson({ repoUrl, branch }),
@@ -34,33 +48,27 @@ export function useAnalysis() {
 
       const durationMs = Math.round(performance.now() - startTime);
 
-      setState(s => ({ ...s, routes, typescript, loading: false }));
+      setState(s => ({ ...s, routes, typescript, loading: false, progress: null }));
 
-      // Fire activation event to PostHog
       posthog.capture('analysis_completed', {
         repo_url: repoUrl,
         branch_name: branch ?? 'default',
         route_count: routes.metadata.totalRoutes,
         controller_count: routes.metadata.totalControllers,
         duration_ms: durationMs,
-        api_type: routes.metadata.apiType
+        api_type: routes.metadata.apiType,
+        breaking_change_count: routes.breakingChanges?.filter(c => c.severity === 'Breaking').length ?? 0,
+        enum_count: Object.keys(routes.enums ?? {}).length,
       });
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setState(s => ({
-        ...s,
-        loading: false,
-        error: errorMessage,
-      }));
-      posthog.capture('analysis_failed', {
-        repo_url: repoUrl,
-        error_message: errorMessage
-      });
+      setState(s => ({ ...s, loading: false, error: errorMessage, progress: null }));
+      posthog.capture('analysis_failed', { repo_url: repoUrl, error_message: errorMessage });
     }
   };
 
   const setMode = (mode: ViewMode) => setState(s => ({ ...s, activeMode: mode }));
 
-  return { ...state, analyze, setMode };
+  return { ...state, analyze, setMode, setProgress };
 }

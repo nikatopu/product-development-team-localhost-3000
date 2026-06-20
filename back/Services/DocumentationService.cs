@@ -1,5 +1,4 @@
 using System.Text;
-using ApiDocGen.Models.Responses;
 using System.Text.RegularExpressions;
 using ApiDocGen.Models.Responses;
 
@@ -160,7 +159,22 @@ public class DocumentationService : IDocumentationService
                     CollectNestedTypes(prop, allTypes);
         }
 
-        // ── 2. Emit TypeScript interfaces ──
+        // ── 2. Emit enum union types ──
+        if (analysis.Enums.Count > 0)
+        {
+            sb.AppendLine("// ----------------------------------------");
+            sb.AppendLine("// Enums");
+            sb.AppendLine("// ----------------------------------------");
+            sb.AppendLine();
+            foreach (var (enumName, members) in analysis.Enums)
+            {
+                var values = string.Join(" | ", members.Select(m => $"'{m}'"));
+                sb.AppendLine($"export type {enumName} = {values};");
+                sb.AppendLine();
+            }
+        }
+
+        // ── 3. Emit TypeScript interfaces ──
         sb.AppendLine("// ----------------------------------------");
         sb.AppendLine("// Interfaces");
         sb.AppendLine("// ----------------------------------------");
@@ -519,6 +533,7 @@ public class DocumentationService : IDocumentationService
             {
                 projectName = analysis.ProjectName,
                 analyzedAt = analysis.AnalyzedAt,
+                enums = analysis.Enums,
                 interfaces,
                 routeTypes
             }, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }),

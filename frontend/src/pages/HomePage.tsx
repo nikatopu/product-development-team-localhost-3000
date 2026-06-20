@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useAnalysis } from '../hooks/useAnalysis';
 import { UrlForm } from '../components/UrlForm';
 import { RouteCard } from '../components/RouteCard';
-import { TypeScriptPanel } from '../components/TypesctiptPanel';
+import { TypeScriptPanel } from '../components/TypeScriptPanel';
 import styles from './HomePage.module.css';
 
 type Tab = 'routes' | 'typescript';
 
 export function HomePage() {
-  const { routes, typescript, loading, error, analyze } = useAnalysis();
+  const { routes, typescript, loading, error, progress, analyze } = useAnalysis();
   const [tab, setTab] = useState<Tab>('routes');
   const [filter, setFilter] = useState('');
   const [methodFilter, setMethodFilter] = useState<string>('ALL');
@@ -25,6 +25,7 @@ export function HomePage() {
   }) ?? [];
 
   const methods = ['ALL', ...Array.from(new Set(routes?.routes.map(r => r.method) ?? []))];
+  const breakingChanges = routes?.breakingChanges?.filter(c => c.severity === 'Breaking') ?? [];
 
   return (
     <div className={styles.page}>
@@ -38,6 +39,17 @@ export function HomePage() {
       <div className={styles.searchBar}>
         <UrlForm onSubmit={analyze} loading={loading} />
       </div>
+
+      {/* Live progress */}
+      {loading && progress && (
+        <div className={styles.progressBar}>
+          <div
+            className={styles.progressFill}
+            style={{ '--progress': `${progress.percent}%` } as React.CSSProperties}
+          />
+          <span className={styles.progressLabel}>{progress.stage}</span>
+        </div>
+      )}
 
       {/* Error */}
       {error && (
@@ -81,8 +93,32 @@ export function HomePage() {
               {routes.metadata.detectedFrameworks.map(f => (
                 <span key={f} className={styles.metaPill}>{f}</span>
               ))}
+              {Object.keys(routes.enums ?? {}).length > 0 && (
+                <span className={styles.metaPill}>{Object.keys(routes.enums).length} enums</span>
+              )}
             </div>
           </div>
+
+          {/* Breaking changes banner */}
+          {breakingChanges.length > 0 && (
+            <div className={styles.breakingBanner}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <strong>{breakingChanges.length} breaking change{breakingChanges.length > 1 ? 's' : ''} detected</strong>
+              <span>compared to the previous scan</span>
+              <ul className={styles.breakingList}>
+                {breakingChanges.slice(0, 3).map((c, i) => (
+                  <li key={i}>
+                    <code>{c.changeType}</code> on <code>{c.affectedEndpoint}</code>
+                    {c.affectedField && <> — field <code>{c.affectedField}</code></>}
+                  </li>
+                ))}
+                {breakingChanges.length > 3 && <li>…and {breakingChanges.length - 3} more</li>}
+              </ul>
+            </div>
+          )}
 
           {/* Tab switcher */}
           <div className={styles.tabBar}>
@@ -111,7 +147,6 @@ export function HomePage() {
           {/* Routes view */}
           {tab === 'routes' && (
             <div className={styles.routesView}>
-              {/* Filters */}
               <div className={styles.filters}>
                 <div className={styles.searchBox}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -138,7 +173,6 @@ export function HomePage() {
                 </div>
               </div>
 
-              {/* Route list */}
               <div className={styles.routeList}>
                 {filteredRoutes.length > 0 ? (
                   filteredRoutes.map((route, i) => (

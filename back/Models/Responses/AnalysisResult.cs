@@ -7,6 +7,8 @@ public class AnalysisResult
     public DateTime AnalyzedAt { get; set; }
     public List<RouteInfo> Routes { get; set; } = new();
     public AnalysisMetadata Metadata { get; set; } = new();
+    public Dictionary<string, List<string>> Enums { get; set; } = new();
+    public List<BreakingChangeInfo> BreakingChanges { get; set; } = new();
 }
 
 public class AnalysisMetadata

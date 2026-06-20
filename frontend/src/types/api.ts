@@ -37,6 +37,15 @@ export interface Route {
   responses: RouteResponse[];
 }
 
+export interface BreakingChange {
+  changeType: string;
+  severity: 'Breaking' | 'NonBreaking';
+  affectedEndpoint: string;
+  affectedField?: string;
+  oldValue?: string;
+  newValue?: string;
+}
+
 export interface RoutesJsonResult {
   projectName: string;
   analyzedAt: string;
@@ -47,6 +56,8 @@ export interface RoutesJsonResult {
     detectedFrameworks: string[];
   };
   routes: Route[];
+  enums: Record<string, string[]>;
+  breakingChanges: BreakingChange[];
 }
 
 export interface TsProperty {
@@ -80,6 +91,7 @@ export interface RouteType {
 export interface TypeScriptJsonResult {
   projectName: string;
   analyzedAt: string;
+  enums: Record<string, string[]>;
   interfaces: Record<string, TsProperty[]>;
   routeTypes: RouteType[];
 }
@@ -88,4 +100,53 @@ export interface DocumentationResult {
   format: string;
   content: string;
   generatedAt: string;
+}
+
+// Auth types
+export interface User {
+  id: string;
+  githubId: number;
+  username: string;
+  avatarUrl: string;
+  email?: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
+// Repository types
+export type ScanStatus = 'Connected' | 'Scanning' | 'Ready' | 'Failed';
+
+export interface Repository {
+  id: string;
+  owner: string;
+  name: string;
+  fullName: string;
+  defaultBranch: string;
+  isPrivate: boolean;
+  status: ScanStatus;
+  connectedAt: string;
+  lastScannedAt?: string;
+  lastScan?: {
+    totalRoutes: number;
+    totalControllers: number;
+    apiType: string;
+    breakingChangeCount: number;
+  };
+}
+
+// Notification types
+export type NotificationType = 'BreakingChange' | 'ScanComplete' | 'ScanFailed';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  repositoryId?: string;
+  repositoryName?: string;
 }

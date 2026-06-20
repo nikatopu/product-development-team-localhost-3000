@@ -1,10 +1,10 @@
 <svg width="282" height="162" viewBox="0 0 282 162" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 150.5C4 150.5 55 150.5 80 150.5C105 150.5 123.25 115 123.25 115C123.25 115 140 79.5 166.5 79.5C193 79.5 254 79.5 254 79.5" stroke="#E0E0E0" stroke-width="17"/>
+<path d="M4 150.5C4 150.5 55 150.5 80 150.5C105 150.5 123.25 115 123.25 115C123.25 115 140 79.5 166.5 79.5C193 79.5 254 79.5 254 79.5" stroke="#171717" stroke-width="17"/>
 <g filter="url(#filter0_d_26_11)">
-<path d="M4 8.5C4 8.5 55 8.5 80 8.5C105 8.5 123.25 44 123.25 44C123.25 44 140 79.5 166.5 79.5C193 79.5 254 79.5 254 79.5" stroke="white" stroke-width="17"/>
+<path d="M4 8.5C4 8.5 55 8.5 80 8.5C105 8.5 123.25 44 123.25 44C123.25 44 140 79.5 166.5 79.5C193 79.5 254 79.5 254 79.5" stroke="#2B2B2B" stroke-width="17"/>
 </g>
 <g filter="url(#filter1_d_26_11)">
-<circle cx="254" cy="79.5" r="23" fill="white"/>
+<circle cx="254" cy="79.5" r="23" fill="#2B2B2B"/>
 </g>
 <defs>
 <filter id="filter0_d_26_11" x="0" y="0" width="258" height="96" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">

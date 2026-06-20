@@ -9,25 +9,26 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Git cloning -->
 		<PackageReference Include="LibGit2Sharp" Version="0.30.*" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.*" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.*" />
+
+		<!-- Roslyn syntax tree parsing — pinned to 4.8.x to match EF Core Design transitive deps -->
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.*" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.*" />
 
-		<PackageReference Include="Microsoft.Build.Locator" Version="1.*"
-		  ExcludeAssets="runtime"
-		  PrivateAssets="all" />
-		<PackageReference Include="Microsoft.Build.Tasks.Core" Version="17.11.4"
-          ExcludeAssets="runtime"
-          PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.*"
-		  ExcludeAssets="runtime"
-		  PrivateAssets="all" />
+		<!-- Database (PostgreSQL via EF Core) -->
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.*" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.*">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 
-		<!-- Add this — transitive dep that also needs the flags -->
-		<PackageReference Include="Microsoft.Build.Framework" Version="17.*"
-		  ExcludeAssets="runtime"
-		  PrivateAssets="all" />
+		<!-- JWT Authentication -->
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.*" />
+
+		<!-- GitHub API client -->
+		<PackageReference Include="Octokit" Version="13.*" />
 	</ItemGroup>
 
 </Project>
