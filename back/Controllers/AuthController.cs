@@ -39,7 +39,8 @@ public class AuthController : ControllerBase
         var clientId = _config["GitHub:ClientId"]
             ?? throw new InvalidOperationException("GitHub:ClientId not configured");
         var state = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-        var callbackUrl = _config["GitHub:CallbackUrl"] ?? "http://localhost:5141/api/auth/github/callback";
+        var callbackUrl = _config["GitHub:CallbackUrl"]
+            ?? throw new InvalidOperationException("GitHub:CallbackUrl not configured");
 
         var githubUrl = $"https://github.com/login/oauth/authorize" +
             $"?client_id={clientId}" +
@@ -57,7 +58,8 @@ public class AuthController : ControllerBase
     {
         var clientId = _config["GitHub:ClientId"]!;
         var clientSecret = _config["GitHub:ClientSecret"]!;
-        var frontendUrl = _config["Frontend:Url"] ?? "http://localhost:5173";
+        var frontendUrl = _config["Frontend:BaseUrl"]
+            ?? throw new InvalidOperationException("Frontend:BaseUrl not configured");
 
         try
         {
