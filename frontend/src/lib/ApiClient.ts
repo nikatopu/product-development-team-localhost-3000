@@ -7,7 +7,7 @@ export interface AnalyzeRequest {
 
 interface DocumentationResult { format: string; content: string; generatedAt: string; }
 
-const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:5141';
+const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:5141').replace(/\/$/, '');
 
 function authHeaders(token?: string | null): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
