@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { User } from '../types/api';
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5141';
+const API_URL = import.meta.env.VITE_API_URL
+    ?? (() => { throw new Error("VITE_API_URL not configured"); })();
 
 interface AuthState {
   user: User | null;
